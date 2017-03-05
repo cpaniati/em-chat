@@ -61,7 +61,7 @@ body::after{
   position:fixed;
   z-index:1000000000000000;
   opacity:1;
-  transition:left .2s, opacity .2s, background .4s;
+  transition:opacity .2s;
   pointer-events:none;
 }
 
@@ -624,6 +624,11 @@ body::after{
   outline:0;
 }
 
+/*
+.thread:not(:hover) .threadTitle{
+  margin-top:18px!important;
+}*/
+
 .thread .menu{
   position: absolute;
   margin: auto;
@@ -705,7 +710,7 @@ body::after{
   border-top-left-radius: 500px;
 }*/
 
-.thread:hover .threadTitle{
+.thread:hover>.threadTitle{
   transition:box-shadow .25s, margin-top .2s, border-bottom .2s, border-top .2s;
   transition-delay: 0s;
   /*border: 1px solid #e7e7e7;*/
@@ -719,7 +724,7 @@ body::after{
   /*border: 1px solid white;*/
 }
 
-.thread[data-active="true"]:hover .threadTitle{
+.thread[data-active="true"]:hover>.threadTitle{
   margin-top:28px;
   transition:margin-top .2s!important;
   /*border: 1px solid white;*/
@@ -824,7 +829,7 @@ body::after{
 #bottomGradient{
   left: 0px;
   right: 0px;
-  height: 200px;
+  height: 120px;
   bottom: 0px;
   position: absolute;
   pointer-events:none;
@@ -855,7 +860,7 @@ body::after{
 #addEntry{
   position:fixed;
   top:30px;
-  right:34px;
+  right:30px;
   width:25px;
   height:25px;
   background:white;
@@ -878,7 +883,7 @@ body::after{
   z-index:10;
   position:fixed;
   top:30px;
-  right:34px;
+  right:30px;
   padding-left:10px;
   padding-right:10px;
   height:25px;
@@ -903,7 +908,7 @@ body::after{
   z-index:10;
   position:fixed;
   top:30px;
-  right:34px;
+  right:30px;
   padding-left:10px;
   padding-right:10px;
   height:25px;
@@ -1338,6 +1343,10 @@ body::after{
 
 
 @media screen and (max-width: 650px) {
+
+  #addEntry, #finishEntry, #logout, #logo{
+    position:absolute;
+  }
 
   #newEntryContainer .title{
     padding-right:0px;

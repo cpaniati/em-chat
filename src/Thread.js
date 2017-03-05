@@ -177,10 +177,11 @@ class Thread extends Component {
         {this.renderEntryNav()}
         {this.renderEntries()}
         <div id="newEntryWrap">{this.renderNewEntry()}</div>
-        <div id="bottomGradient" data-visible={gradientVisible} style={{background:'linear-gradient(to bottom, rgba('+color.r+','+color.g+','+color.b+',0) 0%,rgba('+color.r+','+color.g+','+color.b+',1) 100%)'}}></div>
+        <div id="bottomGradient" data-visible={gradientVisible} style={{background:'linear-gradient(to bottom, rgba('+color.r+','+color.g+','+color.b+',0) 0%,rgba('+color.r+','+color.g+','+color.b+',0.1) 15%,rgba('+color.r+','+color.g+','+color.b+',0.5) 55%,rgba('+color.r+','+color.g+','+color.b+',.9) 100%)'}}></div>
       </div>
     );
   }
 }
+//<div id="bottomGradient" data-visible={gradientVisible} style={{background:'linear-gradient(to bottom, rgba('+color.r+','+color.g+','+color.b+',0) 0%,rgba('+color.r+','+color.g+','+color.b+',1) 100%)'}}></div>
 
 export default Thread;

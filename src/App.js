@@ -962,6 +962,9 @@ userLeftPage(){
         <div onKeyDown={this.threadTitleKeydown.bind(this)} data-thread-id={thread.id} className="threadTitle" contentEditable={renamingThread} onBlur={this.blurRenameThread.bind(this)}>
           {thread.name}
         </div>
+        <div style = {{opacity:'0',pointerEvents:'none'}} onKeyDown={this.threadTitleKeydown.bind(this)} data-thread-id={thread.id} className="threadTitleDummy" contentEditable={renamingThread}>
+          {thread.name}
+        </div>
         <div style={{'background':thread.color}} className="threadColor"></div>
       </div>
     );
@@ -983,8 +986,7 @@ userLeftPage(){
         active_thread:"everything",
         thread_menu_open:false,
         recoloring_thread_id:false,
-        entries_loaded:false,
-
+        entries_loaded:false
       },function(){
         this.getFirebaseEntryData();
       });
@@ -993,7 +995,7 @@ userLeftPage(){
       this.setState({
         active_thread:thread_id,
         thread_menu_open:false,
-        recoloring_thread_id:false,
+        recoloring_thread_id:false
       },function(){
         this.getFirebaseEntryData();
         this.setThreadCookie(thread_id);
