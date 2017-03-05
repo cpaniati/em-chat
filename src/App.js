@@ -143,7 +143,8 @@ class App extends Component {
       convoHistory:[],
       transcripts:[],
       thread_menu_left:60,
-      entries_loaded:false
+      entries_loaded:false,
+      topNavHidden:false
     };
   }
 
@@ -981,6 +982,7 @@ userLeftPage(){
     if(this.state.active_entry){
       this.finishEntry(this.state.active_entry);
     }
+    this.showTopNav();
     if(e.currentTarget.getAttribute('data-active') == 'true'){
       this.setState({
         active_thread:"everything",
@@ -1012,6 +1014,7 @@ userLeftPage(){
   }
 
   clickDeleteThreadMenu(e){
+    this.showTopNav();
     console.log('deleting firebase thread');
     var thread_id=this.state.thread_menu_thread_id;
     this.deleteFirebaseThread(thread_id);
@@ -1089,6 +1092,21 @@ userLeftPage(){
 
 /***************** THREAD PAGE ******************/
 
+
+
+  showTopNav(){
+    this.setState({
+      topNavHidden:false
+    });
+  }
+
+  hideTopNav(){
+    this.setState({
+      topNavHidden:true
+    });
+  }
+
+
   renderThreadPage(new_color){
     if(this.state.active_thread && this.state.fire_logged_in){
       var active_thread_entries={};
@@ -1123,6 +1141,8 @@ userLeftPage(){
       console.log(Object.keys(this.state.entries).length);*/
 
       return(<Thread
+        showTopNav={this.showTopNav.bind(this)}
+        hideTopNav={this.hideTopNav.bind(this)}
         new_color={new_color}
         logout={this.logout.bind(this)}
         saveEntryEdit={this.saveEntryEdit.bind(this)}
@@ -1241,7 +1261,11 @@ userLeftPage(){
     if(this.state.active_thread=='everything'){
       activeThreadColor='transparent';
       new_color="#ffffff";
-    }else if(this.state.threads[this.state.active_thread].name.toLowerCase().includes('dream')){
+    }else{
+
+    }
+
+    if(this.state.threads[this.state.active_thread].name.toLowerCase().includes('dream')){
       activeThreadColor='#001';
       new_color=activeThreadColor;
       textColor="light";
@@ -1259,7 +1283,7 @@ userLeftPage(){
 
     var active_entry=(this.state.active_entry ? true : false);
     return (
-      <div className="App" data-tray-color={trayColor} data-ui-color={uiColor} data-text-color={textColor} onClick={this.appClick.bind(this)} style={{background:activeThreadColor}} data-active-entry={active_entry} data-convo-history-open={this.state.convoHistoryOpen} data-threads-open={this.state.threads_nav_visible}>
+      <div className="App" data-top-nav-hidden={this.state.topNavHidden} data-tray-color={trayColor} data-ui-color={uiColor} data-text-color={textColor} onClick={this.appClick.bind(this)} style={{background:activeThreadColor}} data-active-entry={active_entry} data-convo-history-open={this.state.convoHistoryOpen} data-threads-open={this.state.threads_nav_visible}>
         {this.renderLogo()}
         <div className="AppInner" style={{background:appInnerBG}}>
           {this.renderColorPicker()}

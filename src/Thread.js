@@ -47,11 +47,19 @@ class Thread extends Component {
   componentDidUpdate(){
   }
 
+  scrollEntries(e){
+    if(e.currentTarget.scrollTop > 80){
+      this.props.hideTopNav();
+    }else{
+      this.props.showTopNav();
+    }
+  }
+
   renderEntries(){
     if(this.props.thread_has_entries && this.props.entries_are_loaded){
       console.log('thread has entries');
       console.log(this.props.active_thread_entries);
-      return(<div id="entries">
+      return(<div id="entries" onScroll={this.scrollEntries.bind(this)}>
         {Object.keys(this.props.active_thread_entries).map(this.renderEntry.bind(this))}
       </div>);
     }else{

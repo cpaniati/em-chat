@@ -55,15 +55,17 @@ body::after{
 
 #logo{
   display:block;
-  left: 27px;
+  left: 28px;
   top: 28px;
   height: 29px;
   position:fixed;
   z-index:1000000000000000;
   opacity:1;
-  transition:opacity .2s;
+  transition:opacity .2s, left .2s, height .2s, width .2s, top .2s;
   pointer-events:none;
 }
+
+
 
 .App[data-ui-color="dark"] #logo{
     left:30px;
@@ -1343,6 +1345,14 @@ body::after{
 
 
 @media screen and (max-width: 650px) {
+
+  .App[data-top-nav-hidden="true"] #logo{
+    left:-80px!important;
+  }
+
+  .App[data-top-nav-hidden="true"] #addEntry, .App[data-top-nav-hidden="true"] #finishEntry, .App[data-top-nav-hidden="true"] #logout{
+    right:-50px!important;
+  }
 
   #addEntry, #finishEntry, #logout, #logo{
     position:absolute;
