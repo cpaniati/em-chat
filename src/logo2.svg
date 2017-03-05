@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="70px" height="34px" viewBox="0 0 70 34" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 3 Copy 2</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.125792572 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-3-Copy-2" filter="url(#filter-1)" transform="translate(2.000000, 3.000000)">
+            <g id="Group-2" transform="translate(0.446204, 0.000000)">
+                <g id="Group-3-Copy" transform="translate(32.116684, 13.464750) rotate(-270.000000) translate(-32.116684, -13.464750) translate(19.116684, -18.535250)">
+                    <g id="Group" transform="translate(12.566635, 50.201135) rotate(-90.000000) translate(-12.566635, -50.201135) translate(-0.433365, 37.701135)">
+                        <polygon id="Path-187-Copy" fill="#FFDDDD" transform="translate(13.261350, 12.356242) scale(-1, 1) rotate(-180.000000) translate(-13.261350, -12.356242) " points="1 24.7124831 1 2.43238762e-12 25.5227004 24.7124827"></polygon>
+                        <polygon id="Path-2" fill="#F7C6C6" opacity="0.364913713" transform="translate(7.805271, 6.212254) scale(-1, 1) rotate(-90.000000) translate(-7.805271, -6.212254) " points="13.9674219 13.0257982 2.9773493 -0.601290529 1.64312093 0.755627527"></polygon>
+                        <polygon id="Path-187-Copy-2" fill="#FFFFFF" points="1 24.7124831 1 1.94733119e-13 25.5227004 24.7124827"></polygon>
+                    </g>
+                    <g id="Group" transform="translate(12.566635, 13.354981) rotate(-90.000000) translate(-12.566635, -13.354981) translate(0.066635, 0.854981)">
+                        <polygon id="Path-187-Copy" fill="#FFDDDD" transform="translate(12.261350, 12.356242) scale(-1, 1) translate(-12.261350, -12.356242) " points="1.70530257e-13 24.7124831 1.72033155e-13 -1.95760075e-12 24.5227004 24.7124827"></polygon>
+                        <polygon id="Path-2" fill="#F7C6C6" opacity="0.364913713" points="24.5230413 24.7047222 13.5329688 11.0776334 12.1987404 12.4345515"></polygon>
+                        <polygon id="Path-2" fill="#F7C6C6" opacity="0.364913713" points="24.5230413 24.7047222 13.5329688 11.0776334 12.1987404 12.4345515"></polygon>
+                        <polygon id="Path-187-Copy-2" fill="#FFFFFF" points="-1.80655491e-12 24.7124831 -1.80505201e-12 1.90736316e-13 24.5227004 24.7124827"></polygon>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

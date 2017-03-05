@@ -1,0 +1,186 @@
+import React, { Component } from 'react';
+import * as firebase from 'firebase';
+import Entry from './Entry';
+import $ from "jquery";
+
+
+function hexToRgb(hex) {
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    var shorthandRegex=/^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex=hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+
+    var result=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+
+class Thread extends Component {
+
+  constructor(){
+    super();
+    this.state={
+      entry_data:{
+        text:false,
+        title:false
+      }
+    };
+  }
+
+  componentWillMount(){
+
+  }
+
+  componentWillUpdate(){
+
+  }
+
+  componentDidMount(){
+    this.componentDidUpdate();
+  }
+
+  componentDidUpdate(){
+  }
+
+  renderEntries(){
+    if(this.props.thread_has_entries && this.props.entries_are_loaded){
+      console.log('thread has entries');
+      console.log(this.props.active_thread_entries);
+      return(<div id="entries">
+        {Object.keys(this.props.active_thread_entries).map(this.renderEntry.bind(this))}
+      </div>);
+    }else{
+      console.log('thread has no entries');
+    }
+  }
+
+  renderEntry(entryKey){
+    var entry=this.props.active_thread_entries[entryKey];
+    this.currentEntry=entry;
+    var dateTime=new Date(entry.created_date);
+    dateTime=dateTime.toISOString().replace(/z|t/gi,' ').trim().slice(0,-12);
+    var title=false;
+    var showTitle=false;
+    if(entry.title){
+      showTitle=true;
+      title=entry.title;
+    }
+    if(entry.text){
+      return(<Entry
+        key={entry.id}
+        saveEntryEdit={this.props.saveEntryEdit}
+        deleteEntry={this.props.deleteEntry}
+        entry_data={this.props.entry_data}
+        entryKey={entryKey}
+        title={title}
+        dateTime={dateTime}
+        entry_id={entry.id}
+        text={entry.text}
+      />);
+    }
+  }
+
+  renderEntrySentence(sentence_key,i){
+    var sentence=this.currentEntry.transcript[sentence_key];
+    return(<div key={sentence_key} className="entryItem">
+      {sentence.text+'. '}
+    </div>);
+  }
+
+
+  newEntryClick(e){
+    console.log('new entry click');
+    this.props.newEntry("text");
+  }
+
+  finishEntryClick(e){
+    this.props.finishEntry(this.props.active_entry);
+  }
+
+  renderEntryNav(){
+    if(this.props.active_thread == "everything"){
+      return(<div onClick={this.props.logout.bind(this)} style={{color:this.props.active_thread_data.color}} id="logout">Logout</div>);
+    }else if(!this.props.active_entry && this.props.active_thread && this.props.active_thread != "everything"){
+      return(<div onClick={this.newEntryClick.bind(this)} style={{color:this.props.active_thread_data.color}} id="addEntry">+</div>);
+    }else if(this.props.active_entry && this.props.active_thread){
+      return(<div onClick={this.finishEntryClick.bind(this)} style={{color:this.props.threads[this.props.active_thread].color}} id="finishEntry">Done</div>);
+    }
+  }
+
+  blurEntryTitle(e){
+    console.log('blurred entry title');
+    var entry_data=this.props.entry_data;
+    entry_data.title=e.currentTarget.textContent;
+    this.props.updateEntry(this.props.active_entry,entry_data);
+    /*
+    this.setState({
+      entry_data: entry_data
+    }, function(){
+      this.props.updateEntry(this.props.active_entry,this.state.entry_data);
+    });*/
+  }
+
+  blurEntryText(e){
+    console.log('blurred entry text');
+    var entry_data=this.props.entry_data;
+    entry_data.text=e.currentTarget.innerText;
+    this.props.updateEntry(this.props.active_entry,entry_data);
+    /*
+    this.setState({
+      entry_data: entry_data
+    }, function(){
+      this.props.updateEntry(this.props.active_entry,this.state.entry_data);
+    });*/
+  }
+
+  toggleEntryMenu(e){
+
+  }
+
+  renderNewEntry(){
+    if(this.props.active_entry){
+      var today=new Date().toISOString().replace(/z|t/gi,' ').trim().slice(0,-12);
+      var title=(this.props.entry_data.title != false ? this.props.entry_data.title : "");
+      var text=(this.props.entry_data.text != false ? this.props.entry_data.text : "");
+      return(
+        <div id="newEntryContainer">
+          <div contentEditable="true" onBlur={this.blurEntryTitle.bind(this)} placeholder="Entry Title..." className="title">{title}</div>
+          <div className="date">{today}</div>
+          <div contentEditable="true" onBlur={this.blurEntryText.bind(this)} placeholder="Entry Text..." className="entryInput">{text}</div>
+        </div>
+      );
+    }
+  }
+
+
+
+  render() {
+    var color=this.props.active_thread_data.color;
+    if(this.props.new_color != false){
+      console.log('using new color');
+      color=this.props.new_color;
+    }
+    color=hexToRgb(color);
+
+    var gradientVisible = true;
+    if(this.props.active_thread_data.id=="everything"){
+      gradientVisible = false;
+    }
+
+    return (
+      <div id="threadPage">
+        {this.renderEntryNav()}
+        {this.renderEntries()}
+        <div id="newEntryWrap">{this.renderNewEntry()}</div>
+        <div id="bottomGradient" data-visible={gradientVisible} style={{background:'linear-gradient(to bottom, rgba('+color.r+','+color.g+','+color.b+',0) 0%,rgba('+color.r+','+color.g+','+color.b+',1) 100%)'}}></div>
+      </div>
+    );
+  }
+}
+
+export default Thread;

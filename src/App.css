@@ -1,0 +1,1394 @@
+body, html{
+  background: rgba(255,158,158,1);
+  background: -moz-radial-gradient(top center, ellipse 200% 200%, rgba(255,158,158,1) 0%, rgba(222,94,94,1) 100%);
+  background: -webkit-gradient(radial, top center, 0px, center center, 200%, color-stop(0%, rgba(255,158,158,1)), color-stop(100%, rgba(222,94,94,1)));
+  background: -webkit-radial-gradient(top center, ellipse 200%, rgba(255,158,158,1) 0%, rgba(222,94,94,1) 100%);
+  background: -o-radial-gradient(top center, ellipse 200%, rgba(255,158,158,1) 0%, rgba(222,94,94,1) 100%);
+  background: -ms-radial-gradient(top center, ellipse 200%, rgba(255,158,158,1) 0%, rgba(222,94,94,1) 100%);
+  background: radial-gradient(ellipse at top center, rgba(255,158,158,1) 0%, rgba(222,94,94,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff9e9e', endColorstr='#de5e5e', GradientType=1 );
+  top:0px;
+  left:0px;
+  right:0px;
+  bottom:0px;
+  position:fixed;
+}
+
+body::after{
+    position:absolute; width:0; height:0; overflow:hidden; z-index:-1;
+    content:url(http://cdn.mysitemyway.com/etc-mysitemyway/webtreats/assets/posts/857/full/tileable-classic-nebula-space-patterns-6.jpg);
+}
+
+.App {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  transition:background .4s;
+}
+
+.AppInner{
+  position:fixed;
+  top:0px;
+  bottom:60px;
+  left:0px;
+  right:0px;
+  opacity:1;
+  background:transparent;
+  transition:opacity 1s, background .4s;
+}
+
+.AppInner.fading{
+  background-delay:.2s;
+  transition:opacity 1s, background 1s;
+}
+
+.AppInner:empty{
+  opacity:0;
+}
+
+#backgroundLoader{
+  opacity:0;
+  pointer-events:none;
+}
+
+/********* NAVIGATION, LOGO, HEADER *********/
+
+#logo{
+  display:block;
+  left: 27px;
+  top: 28px;
+  height: 29px;
+  position:fixed;
+  z-index:1000000000000000;
+  opacity:1;
+  transition:left .2s, opacity .2s, background .4s;
+  pointer-events:none;
+}
+
+.App[data-ui-color="dark"] #logo{
+    left:30px;
+    top:30px;
+    height:25px;
+}
+
+#logo[data-convo-history-open="true"]{
+  left:380px;
+  pointer-events:none;
+}
+/*
+#logo[data-convo-history-open="true"][data-active-entry="true"]{
+  left:50%;
+  margin-left:30px;
+  pointer-events:none;
+}*/
+
+#logo[data-picking-color="true"]{
+  opacity:0;
+}
+
+#microphoneContainer{
+  position:absolute;
+  bottom:19px;
+  right:0px;
+  height:25px;
+  padding:15px 0px 15px 15px;
+  width:60px;
+  z-index:10;
+  transition: opacity .2s;
+}
+
+#microphone{
+  float:left;
+  height:25px;
+  width:25px;
+  right:30px;
+  border:2px solid white;
+  border-radius:100px;
+  bottom:0px;
+  cursor:pointer;
+  transition: margin-top .2s, height .2s, width .2s, margin-left .2s, border .4s;
+}
+
+.App[data-ui-color="dark"] #microphone{
+  border:2px solid #444;
+}
+
+#mic_transcript{
+  position:fixed;
+  right:80px;
+  line-height:30px;
+  font-size:25px;
+  color:rgba(255,255,255,.2);
+  font-weight:bold;
+  white-space:pre-line;
+  left:420px;
+  bottom: 28px;
+  text-align:right;
+}
+
+.App[data-text-color="dark"] #mic_transcript{
+  color:rgba(0,0,0,.2);
+}
+
+.App[data-threads-open="true"] #mic_transcript{
+  bottom: 88px;
+}
+
+#microphoneContainer:hover #micInner{
+  height:17px;
+  width:17px;
+  margin:4px;
+}
+
+#micInner{
+  height:15px;
+  width:15px;
+  margin:5px;
+  background:white;
+  transition: border-radius .2s, height .2s, width .2s, margin .2s, background .4s;
+  border-radius:10px;
+}
+
+.App[data-ui-color="dark"] #micInner{
+  background:#444;
+}
+
+#microphoneContainer[data-recording="true"] #micInner{
+  height:13px;
+  width:13px;
+  margin:6px;
+  border-radius:2px;
+}
+
+#microphoneContainer[data-recording="true"]:hover #microphone{
+  height:27px;
+  width:27px;
+  margin-top:-1px;
+  margin-left:-1px;
+}
+
+#microphoneContainer[data-recording="true"]:hover #micInner{
+  margin:7px;
+}
+
+#micLevels{
+  position:absolute;
+  right:0px;
+  height:25px;
+  width:20px;
+  margin-top:4px;
+}
+
+#micLevels .level{
+  float:right;
+  clear:both;
+  margin-top:4px;
+  border-top:1px solid white;
+  transition:width .5s, border .4s;
+}
+
+.App[data-ui-color="dark"] #micLevels .level{
+  border-top:1px solid white;
+}
+
+#micLevels .level:first-child{
+  margin-top:0px;
+}
+
+#micLevels .level:nth-child(1){
+  width:5px;
+}
+
+#micLevels .level:nth-child(2){
+  width:15px;
+}
+
+#micLevels .level:nth-child(3){
+  width:8px;
+}
+
+#micLevels .level:nth-child(4){
+  width:10px;
+}
+
+#micLevels .level:nth-child(5){
+  width:13px;
+}
+
+
+
+
+
+#convoHistoryContainer{
+  position:absolute;
+  left:-350px;
+  width:350px;
+  top:0px;
+  bottom:0px;
+  transition: left .2s, width .2s, right .2s;
+  z-index:10;
+}
+
+/*
+#convoHistoryContainer[data-style="entry"]{
+  width:50%;
+  left:-50%;
+}*/
+
+#convoHistoryContainer[data-open="true"]{
+  left:0px;
+}
+
+/*
+#convoHistoryContainer .entryTitle{
+  opacity:0;
+  pointer-events:none;
+  right:0px;
+  left:0px;
+  position:absolute;
+  top:0px;
+  height:90px;
+  padding:25px;
+  background:rgba(255,255,255,.2);
+  line-height:40px;
+  box-sizing:border-box;
+  z-index:100;
+  outline:0;
+  font-size:20px;
+  font-weight:bold;
+  display:block;
+  transition: opacity .2s, background .4s, color .4s;
+}
+
+#convoHistoryContainer .entryTitle[contenteditable=true]:empty:before{
+  content: attr(placeholder);
+}
+
+#convoHistoryContainer .entryTitle:not(:empty){
+  color:white!important;
+  text-transform:capitalize;
+}
+
+.App[data-active-entry="true"] #convoHistoryContainer .entryTitle{
+  opacity:1;
+  pointer-events:all;
+}
+
+.App[data-tray-color="dark"] #convoHistoryContainer .entryTitle{
+  background:rgba(0,0,0,.2);
+}
+
+.App[data-tray-color="dark"] #convoHistoryContainer .entryTitle:not(:empty){
+  color:#222!important;
+  text-transform:capitalize;
+}*/
+
+
+
+#convoHistory{
+  padding-top: 20px;
+  overflow-y: scroll; /* has to be scroll, not auto */
+  -webkit-overflow-scrolling: touch;
+  position:absolute;
+  bottom:90px;
+  top:0px;
+  left:0px;
+  right:0px;
+  background:rgba(255,255,255,.2);
+  transition:background .4s, opacity .2s;
+  /*border-bottom:rgba(0,0,0,.5);*/
+}
+
+.App[data-tray-color="dark"] #convoHistory{
+  background:rgba(0,0,0,.3);
+}
+
+#entryHistory{
+  padding:20px;
+  box-sizing:border-box;
+  padding-top: 20px;
+  overflow-y: scroll; /* has to be scroll, not auto */
+  -webkit-overflow-scrolling: touch;
+  position:absolute;
+  bottom:90px;
+  top:0px;
+  left:0px;
+  right:0px;
+  background:rgba(255,255,255,.2);
+  transition:background .4s, opacity .2s;
+  /*border-bottom:rgba(0,0,0,.5);*/
+}
+
+.App[data-tray-color="dark"] #entryHistory{
+  background:rgba(0,0,0,.3);
+}
+
+/*
+.App[data-active-entry="true"] #entryHistory{
+  opacity:0;
+}*/
+
+#convoHistoryButton{
+  position:absolute;
+  bottom:15px;
+  right:-65px;
+  padding:15px;
+  cursor:pointer;
+
+}
+
+#convoHistoryButton:hover .level{
+  padding-right:3px;
+  margin-right:-3px;
+}
+
+#convoHistoryButton:hover .level:nth-child(2){
+  padding-right:4px;
+  margin-right:-4px;
+}
+
+#convoHistoryContainer[data-open="true"] #convoHistoryButton .level{
+  padding-right:3px;
+  margin-right:-3px;
+}
+
+#convoHistoryContainer[data-open="true"] #convoHistoryButton .level:nth-child(2){
+  padding-right:4px;
+  margin-right:-4px;
+}
+
+#convoHistoryContainer[data-open="true"] #convoHistoryButton:hover .level{
+  padding-right:0px;
+  margin-right:0px;
+}
+
+#convoHistoryButton .level{
+  float:left;
+  clear:both;
+  border-radius:2px;
+  background:white;
+  width:15px;
+  height:9px;
+  margin-top:2px;
+  padding-right:0px;
+  transition: padding-right .2s, margin-right .2s, background .4s;
+}
+
+.App[data-ui-color="dark"] #convoHistoryButton .level{
+  background: #444;
+}
+
+#convoHistoryButton .level:first-child{
+  margin-top:0px;
+}
+
+#convoHistoryButton .level:nth-child(2){
+  width:20px;
+}
+
+.convoItem[data-type="user"]{
+  line-height:30px;
+  font-size:18px;
+  /*color:rgba(255,158,158,1);*/
+  color:white;
+  font-weight:bold;
+  white-space:pre-line;
+  padding: 5px;
+  margin: 2px 15px;
+  float:left;
+  clear:both;
+  border-radius:8px;
+}
+
+.App[data-text-color="dark"] .convoItem[data-type="user"]{
+  color: #222;
+}
+
+.convoItem[data-type="user"]:hover{
+  background:rgba(0,0,0,.1);
+}
+
+.convoItem[data-type="bot"]{
+  line-height:30px;
+  font-size:16px;
+  color:#222;
+  background:white;
+  padding: 10px;
+  float:right;
+  clear:both;
+  margin: 5px 20px;
+  max-width: 220px;
+  border-radius: 8px;
+  line-height: 23px;
+}
+
+.App[data-ui-color="dark"] .convoItem[data-type="bot"]{
+  color:white;
+  background:#222;
+}
+
+#entryHistory .entryItem{
+  display: inline;
+  color: white;
+  line-height: 30px;
+  transition: color .4s;
+}
+
+.App[data-ui-color="dark"] #entryHistory .entryItem{
+  color:#222;
+}
+
+#convoInput{
+  width:100%;
+  min-height:90px;
+  padding:20px;
+  box-sizing:border-box;
+  border:0px;
+  outline:0;
+  bottom:0px;
+  /*background:rgba(255,255,255,.1);*/
+  position:absolute;
+  color:white;
+  border-right:1px solid rgba(255,255,255,.2);
+  transition: border .4s, color .4s;
+}
+
+.App[data-text-color="dark"] #convoInput{
+  color:#222;
+}
+
+.App[data-tray-color="dark"] #convoInput{
+  border-right:1px solid rgba(0,0,0,.25);
+}
+
+#convoInput[contenteditable=true]:empty{
+  color:rgba(255,255,255,.3);
+}
+
+.App[data-text-color="dark"] #convoInput[contenteditable=true]:empty{
+  color:rgba(0,0,0,.35);
+}
+
+#convoInput[contenteditable=true]:empty:before{
+  content: attr(placeholder);
+  display: block; /* For Firefox */
+}
+/*
+.App[data-active-entry="true"] #convoInput{
+  top:90px;
+}*/
+
+
+/********* Threads Nav *********/
+
+#threads_nav{
+  position:fixed;
+  bottom:0px;
+  left:0px;
+  right:0px;
+  height:60px;
+  background:white;
+  padding-left:5px;
+  z-index: 110;
+  box-shadow: 0px 0px 10px rgba(0,0,0,.15);
+}
+
+
+#threadMenuWrap{
+  position:static;
+  opacity:0;
+  transition:opacity .2s;
+}
+
+#threadMenu{
+  position:fixed;
+  bottom:80px;
+  border-radius:2px;
+  box-shadow: 0px 2px 10px rgba(0,0,0,.2);
+  background:white;
+  padding:10px;
+  width:70px;
+  font-size:14px;
+  margin-left:-45px;
+  pointer-events:none;
+}
+
+#threadMenuWrap[data-visible="true"]{
+  pointer-events:all;
+  opacity:1;
+}
+
+#threadMenuWrap[data-visible="true"] #threadMenu{
+  pointer-events:all;
+}
+
+#threadMenu>div{
+  padding:8px;
+  cursor:pointer;
+}
+
+#threadMenu>div:hover{
+  background:#eee;
+}
+
+#threads{
+  height:100%;
+  position:absolute;
+  left:0px;
+  right:90px;
+  white-space:nowrap;
+  overflow-x:scroll;
+  overflow-y: hidden; /* has to be scroll, not auto */
+  -webkit-overflow-scrolling: touch;
+  padding-left:5px;
+  background:#f8f8f8;
+}
+
+#threadsCover{
+  position:absolute;
+  z-index:10000;
+  width:160px;
+  height:100%;
+  top:0px;
+  right:90px;
+  pointer-events:none;
+  border-right:1px solid rgba(0,0,0,.1);
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ffffff+0,000000+100&0+0,0.04+100 */
+  background: -moz-linear-gradient(left,  rgba(255,255,255,0) 0%, rgba(0,0,0,0.04) 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left,  rgba(255,255,255,0) 0%,rgba(0,0,0,0.04) 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right,  rgba(255,255,255,0) 0%,rgba(0,0,0,0.04) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#0a000000',GradientType=1 ); /* IE6-9 */
+
+}
+
+#addThread{
+  border:1px solid #e7e7e7;
+  position:absolute;
+  right:31px;
+  top:16px;
+  height:26px;
+  width:26px;
+  border-radius:100px;
+  text-align:center;
+  line-height:24px;
+  cursor:pointer;
+  background:white;
+  transition:background .2s;
+}
+
+#addThread:hover{
+  background:#e7e7e7;
+}
+
+.thread{
+  position:relative;
+  height:100%;
+  padding:0px 15px;
+  cursor:pointer;
+  overflow:hidden;
+  display: inline-block;
+  margin-bottom: -5px;
+}
+
+.thread[data-active="true"] .threadColor{
+  height:180%!important;
+  left:-50px;
+  right:-50px;
+  border-top-right-radius:500px;
+  border-top-left-radius: 500px;
+}
+
+.thread[data-active="true"] .threadTitle{
+  transition:box-shadow .25s, margin-top .2s;
+  transition-delay: .15s;
+  box-shadow:0px 1px 5px rgba(0,0,0,.2);
+  /*border:1px solid white!important;*/
+}
+
+.threadTitle{
+  box-sizing:border-box;
+  border-top:1px solid #f8f8f8;
+  position:relative;
+  z-index:10;
+  padding:5px 10px;
+  background:#f8f8f8;
+  border-radius:100px;
+  margin:auto;
+  font-size:14px;
+  margin-top:18px;
+  box-shadow:0px 0px 3px rgba(0,0,0,0);
+  transition:margin-top .2s, box-shadow .35s, border-bottom .2s, border-top .2s;
+  transition-delay: 0s;
+  border-bottom:1px solid #f8f8f8;
+  /*border: 1px solid white;*/
+  outline:0;
+}
+
+.thread .menu{
+  position: absolute;
+  margin: auto;
+  width: 30px;
+  padding: 10px;
+  left: 50%;
+  margin-left: -25px;
+  padding-bottom: 20px;
+  opacity: 0;
+  z-index: 5;
+  transition: opacity .2s, top .2s;
+  pointer-events: none;
+  top:5px;
+}
+
+.thread[data-menu-visible="false"] .menu{
+  display:none;
+}
+
+
+
+.thread .menu:hover>div{
+  background:#eee;
+}
+
+.thread .menu>div{
+  width:6px;
+  height:6px;
+  border-radius:10px;
+  margin:2px;
+  background:white;
+  float:left;
+  box-shadow:0px 1px 3px rgba(0,0,0,.1);
+}
+
+.App[data-ui-color="dark"] .thread .menu>div{
+  background:#222;
+}
+
+.App[data-ui-color="dark"] .thread .menu:hover>div{
+  background:#333!important;
+}
+
+.thread[data-active="true"]:hover .menu{
+  pointer-events:auto;
+  opacity:1;
+  top:0px;
+  /*border: 1px solid white;*/
+}
+
+.thread[data-active="true"][data-menu-open="true"] .menu{
+  pointer-events:auto;
+  opacity:1;
+  top:0px;
+  /*border: 1px solid white;*/
+}
+
+.threadColor{
+  position:absolute;
+  left:25px;
+  right:25px;
+  bottom:0px;
+  height:4px;
+  transition:height .4s, border-top-right-radius .1s, border-top-left-radius .1s, left .4s, right .4s;
+  border-top-right-radius:0px;
+  border-top-left-radius:0px;
+}
+
+.thread:hover .threadColor{
+  height:6px;
+}
+
+/*
+.thread:hover .threadColor{
+  height:150%;
+  left:-50px;
+  right:-50px;
+  border-top-right-radius:500px;
+  border-top-left-radius: 500px;
+}*/
+
+.thread:hover .threadTitle{
+  transition:box-shadow .25s, margin-top .2s, border-bottom .2s, border-top .2s;
+  transition-delay: 0s;
+  /*border: 1px solid #e7e7e7;*/
+  box-shadow:0px 1px 5px rgba(0,0,0,.2);
+  border-bottom:1px solid #c0c0c0;
+  border-top:1px solid #ffffff;
+}
+
+.thread[data-active="true"] .threadTitle{
+  transition-delay: 0s;
+  /*border: 1px solid white;*/
+}
+
+.thread[data-active="true"]:hover .threadTitle{
+  margin-top:28px;
+  transition:margin-top .2s!important;
+  /*border: 1px solid white;*/
+}
+
+.thread[data-active="true"][data-menu-visible="false"]:hover  .threadTitle{
+  margin-top:18px;
+  border-top:1px solid #F8F8F8;
+  border-bottom:1px solid #F8F8F8;
+}
+
+.thread[data-active="true"]:hover  .threadTitle{
+  border-top:1px solid #F8F8F8;
+  border-bottom:1px solid #F8F8F8;
+}
+
+.thread[data-active="true"][data-menu-open="true"] .threadTitle{
+  margin-top:28px;
+  transition:margin-top .2s!important;
+  /*border: 1px solid white;*/
+}
+
+
+
+/********* Threads Page *********/
+
+
+#newEntryContainer{
+  position: absolute;
+  padding-left: 450px;
+  left:0px;
+  right:0px;
+  padding-right: 120px;
+  top: 0px;
+  bottom: 0px;
+  overflow-y:scroll;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom:90px;
+  opacity:1;
+  transition:opacity .2s, left .2s, padding-left .2s, padding-right .2s, padding-top .2s;
+}
+
+#newEntryContainer .title{
+    position: relative;
+    margin-right: 100px;
+    padding-top: 30px;
+    left: 0px;
+    line-height: 40px;
+    padding: 25px;
+    box-sizing: border-box;
+    font-size: 24px;
+    font-weight: bold;
+    outline:0px;
+    color:white;
+    transition: color .4s;
+    padding-right:100px;
+}
+
+#newEntryContainer .title[contenteditable=true]:empty:before{
+  content: attr(placeholder);
+  color:rgba(255,255,255,.3);
+}
+
+.App[data-text-color="dark"] #newEntryContainer .title[contenteditable=true]:empty:before{
+  content: attr(placeholder);
+  color:rgba(0,0,0,.3);
+}
+
+#newEntryContainer .date{
+  height: 85px;
+  position: absolute;
+  right: 120px;
+  width: 100px;
+  line-height: 35px;
+  padding: 25px;
+  padding-right: 0px;
+  text-align: right;
+  padding-left: 0px;
+  font-size: 14px;
+  top: 0px;
+  box-sizing: border-box;
+  color:white;
+  transition: color .4s;
+}
+
+.App[data-text-color="dark"] #newEntryContainer .date, .App[data-text-color="dark"] #newEntryContainer .title{
+  color:#222;
+}
+
+#newEntryContainer .entryInput{
+  position: relative;
+  background: white;
+  padding: 25px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,.15);
+  min-height: 100px;
+  margin-left:25px;
+  outline:0px;
+  line-height:25px;
+  white-space:pre-line;
+}
+
+#bottomGradient{
+  left: 0px;
+  right: 0px;
+  height: 200px;
+  bottom: 0px;
+  position: absolute;
+  pointer-events:none;
+  transition: opacity 0s;
+  opacity:0;
+  /*animation: 1s ease-out 0s 1 pulse;*/
+}
+
+#bottomGradient.active{
+  opacity:1;
+  transition: opacity .4s;
+}
+
+#bottomGradient[data-visible="false"]{
+  transition: opacity 0s;
+  opacity:0!important;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#addEntry{
+  position:fixed;
+  top:30px;
+  right:34px;
+  width:25px;
+  height:25px;
+  background:white;
+  line-height:25px;
+  text-align:center;
+  color:#222;
+  z-index:10;
+  border-radius:2px;
+  transition:color .2s, background .4s, padding .2s, top .2s, right .2s, opacity .2s;
+  cursor:pointer;
+  box-shadow: 0px 1px 2px rgba(0,0,0,.12);
+}
+
+.App[data-ui-color="dark"] #addEntry, .App[data-ui-color="dark"] #finishEntry{
+  background-color:#444;
+  color:white;
+}
+
+#finishEntry{
+  z-index:10;
+  position:fixed;
+  top:30px;
+  right:34px;
+  padding-left:10px;
+  padding-right:10px;
+  height:25px;
+  background:white;
+  line-height:25px;
+  text-align:center;
+  color:#222;
+  border-radius:2px;
+  transition:color .2s, background-color .2s, padding .2s, top .2s, right .2s, opacity .2s;
+  cursor:pointer;
+  font-size:14px;
+  box-shadow: 0px 1px 2px rgba(0,0,0,.12);
+}
+
+#addEntry:hover{
+  padding:2px;
+  right:32px;
+  top:28px;
+}
+
+#logout{
+  z-index:10;
+  position:fixed;
+  top:30px;
+  right:34px;
+  padding-left:10px;
+  padding-right:10px;
+  height:25px;
+  background:white;
+  line-height:25px;
+  text-align:center;
+  color:#222;
+  border-radius:2px;
+  transition:color .2s, background-color .2s, padding .2s, top .2s, right .2s, opacity .2s;
+  cursor:pointer;
+  font-size:14px;
+  box-shadow: 0px 1px 2px rgba(0,0,0,.12);
+}
+
+/********* Login *********/
+
+#login{
+  width:120px;
+  height:60px;
+  text-align:center;
+  line-height:60px;
+  letter-spacing:3px;
+  box-sizing:border-box;
+  border-radius:100px;
+  background-color:white;
+  color:#EA7676;
+  position:absolute;
+  top:50%;
+  left:50%;
+  margin-top:-30px;
+  margin-left:-70px;
+  box-shadow:0px 2px 10px rgba(0,0,0,.1);
+  transition: box-shadow .2s, color .2s, border-bottom .2s;
+  cursor:pointer;
+  border-bottom: 1px solid #b66;
+}
+
+#login:hover{
+  color:#FF8686;
+  box-shadow:0px 2px 30px rgba(255,100,100,1);
+  border-bottom: 1px solid #d88;
+}
+
+#login{
+  width:120px;
+  height:60px;
+  text-align:center;
+  line-height:60px;
+  letter-spacing:3px;
+  box-sizing:border-box;
+  border-radius:100px;
+  background-color:white;
+  color:#CA7676;
+  position:absolute;
+  top:50%;
+  left:50%;
+  margin-top:-30px;
+  margin-left:-70px;
+  box-shadow:0px 2px 10px rgba(0,0,0,.2);
+  transition: box-shadow .2s, color .2s, border-bottom .2s, border-left .2s, border-top .2s, border-right .2s;
+  cursor:pointer;
+  border-bottom: 1px solid #FFFFFF;
+  border-left: 1px solid #FFFFFF;
+  border-right: 1px solid #FFFFFF;
+  border-top: 1px solid #FFFFFF;
+}
+
+#login:hover{
+  color:#FF7676;
+  box-shadow:0px 0px 5px #FF8686;
+  border-bottom: 1px solid #FF8686;
+  border-left: 1px solid #FF8686;
+  border-right: 1px solid #FF8686;
+  border-top: 1px solid #FF8686;
+}
+
+
+
+/********* COlOR PICKER *********/
+
+#colorPicker{
+  position:fixed;
+  left:0px;
+  right:0px;
+  top:0px;
+  bottom:60px;
+  z-index:99;
+  background:white;
+}
+
+#swatches{
+  position:absolute;
+  left:0px;
+  right:0px;
+  top:0px;
+  bottom:160px;
+}
+
+.swatchSection{
+  float:left;
+  width:6.66%;
+  height:100%;
+}
+
+.swatch{
+  width:100%;
+  height:16.66%;
+  box-sizing:border-box;
+}
+
+.swatch:hover{
+  border:5px solid white;
+}
+
+#entries{
+  padding-top:150px;
+  left: 0px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  transition:width .2s, left .2s, right .2s, max-width .2s, padding-left .2s, opacity 0s;
+  opacity:0;
+  bottom:0px;
+  overflow:scroll;
+  padding-right:90px;
+  padding-left:50%;
+  overflow-y: scroll; /* has to be scroll, not auto */
+  overflow-x:hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom:150px;
+}
+
+#entries.active{
+  opacity:1;
+  transition:width .2s, left .2s, right .2s, max-width .2s, padding-left .2s, opacity .6s;
+}
+
+.App[data-active-entry="true"] #entries, .App[data-active-entry="true"] #entries.active{
+  transition:width .2s, left .2s, right .2s, max-width .2s, padding-left .2s, opacity .4s;
+}
+
+
+.App[data-convo-history-open="true"] #entries{
+
+}
+
+.App[data-active-entry="true"] #entries{
+  opacity:0;
+}
+
+.entry{
+  padding:20px;
+  padding-bottom:40px;
+  position:relative;
+  transition: margin-top .2s;
+}
+
+.entry .text{
+  white-space: pre-line;
+  padding: 20px;
+  background: white;
+  box-shadow: 0px 2px 8px rgba(0,0,0,.15);
+  margin-top:30px;
+  line-height:25px;
+  outline:0;
+}
+
+.entry .title{
+  padding-right:100px;
+  text-transform:capitalize;
+  font-size: 22px;
+  font-weight: bold;
+  color:white;
+  transition: color .4s;
+  outline:0;
+}
+
+.entry .title[contenteditable=true]:empty:before, .entry .text[contenteditable=true]:empty:before{
+  content: attr(placeholder);
+  color:rgba(255,255,255,.2);
+}
+
+.App[data-text-color="dark"] .entry .title[contenteditable=true]:empty:before, .App[data-text-color="dark"] .entry .text[contenteditable=true]:empty:before{
+  content: attr(placeholder);
+  color:rgba(0,0,0,.2);
+}
+
+.entry .date{
+  font-weight: bold;
+  color: white;
+  position: absolute;
+  text-align: right;
+  right: 20px;
+  top: 20px;
+  transition: color .4s;
+}
+
+#entries .entryItem{
+  display: inline;
+  color: white;
+  line-height: 30px;
+}
+
+.App[data-text-color="dark"] #entries .title, .App[data-text-color="dark"] #entries .date{
+  color:#222;
+}
+
+.entry .menu{
+  position:absolute;
+  right:-20px;
+  top:0px;
+}
+
+.entry .menu .menuButton{
+  height:30px;
+  width:6px;
+  padding:20px;
+  cursor:pointer;
+}
+
+.entry .menu .menuButton>div{
+  width:6px;
+  height:6px;
+  border-radius:100px;
+  margin-bottom:4px;
+  background: white;
+  opacity:.4;
+}
+
+.App[data-text-color="dark"] .entry .menu .menuButton>div{
+  background: black;
+  opacity:.25;
+}
+
+.entry .menu .menuButton:hover>div{
+  opacity:.6;
+}
+
+.App[data-text-color="dark"] .entry .menu .menuButton:hover>div{
+  opacity:.45;
+}
+
+
+.entry .menu .menuWrap{
+  opacity:0;
+  pointer-events:none;
+  position:absolute;
+  right:40px;
+  top:20px;
+  transition: opacity .2s;
+  padding:10px;
+  background:white;
+  border-radius:4px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,.15);
+}
+
+.menu[data-open="true"] .menuWrap{
+  opacity:1;
+  pointer-events:all;
+}
+
+.entry .menu .menuWrap>div{
+  padding:5px;
+  background:white;
+  cursor:pointer;
+}
+
+.entry .menu .menuWrap>div:hover{
+  background:#eee;
+}
+
+.entry .save{
+  opacity:0;
+  pointer-events:none;
+  border-radius:2px;
+  background:white;
+  color:#222;
+  position: absolute;
+  right: -50px;
+  top: 20px;
+  padding: 5px 10px;
+  font-size:14px;
+  cursor:pointer;
+  transition: right .2s, top .2s, opacity .2s;
+}
+
+.entry .cancel{
+  opacity: 0;
+  pointer-events: none;
+  border-radius: 2px;
+  background: white;
+  color: #222;
+  position: absolute;
+  right: -50px;
+  top: -20px;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor:pointer;
+  transition: right .2s, top .2s, opacity .2s;
+}
+
+.entry .cancel:hover, .entry .save:hover{
+  background:#eee!important;
+}
+
+.App[data-ui-color="dark"] .entry .save, .App[data-ui-color="dark"] .entry .cancel{
+  background:#444;
+  color:white;
+}
+
+.App[data-ui-color="dark"] .entry .cancel:hover, .App[data-ui-color="dark"] .entry .save:hover{
+  background:#333!important;
+}
+
+
+.entry[data-editing="true"] .save{
+  opacity: 1;
+  pointer-events:all;
+}
+
+.entry[data-editing="true"] .cancel{
+  opacity: 1;
+  pointer-events:all;
+}
+
+.entry[data-editing="true"] .menu{
+  opacity: 0;
+  pointer-events:none;
+}
+
+
+
+
+
+
+@media screen and (max-width: 1200px) {
+
+  #newEntryContainer{
+    position: fixed;
+    padding-left: 400px;
+    padding-right:30px;
+  }
+
+  #entries{
+    padding-left:390px;
+  }
+
+  .App[data-convo-history-open="true"] #convoHistoryContainer{
+    width:300px;
+  }
+
+  .App[data-convo-history-open="true"] #logo[data-convo-history-open="true"]{
+    left:330px;
+  }
+
+}
+
+@media screen and (max-width: 900px) {
+
+  #convoInput{
+    padding-right:60px;
+  }
+
+  #convoHistoryButton{
+    right: 10px;
+  }
+
+  .App[data-convo-history-open="false"] #convoHistoryButton{
+    right:-65px;
+  }
+
+  #entries{
+    padding-left:90px;
+    padding-right:90px;
+  }
+
+  .App[data-convo-history-open="true"] #entries{
+    opacity:0;
+    pointer-events:none;
+    left:0px;
+  }
+
+  .App[data-convo-history-open="false"] #entries{
+    left:0px;
+  }
+
+  .App[data-convo-history-open="true"] #logo{
+    left:30px!important;
+    opacity:0;
+    pointer-events:none;
+  }
+
+  .App[data-convo-history-open="true"] #convoHistoryContainer, .App[data-convo-history-open="true"][data-active-entry="true"] #convoHistoryContainer{
+    right:95px;
+    width:auto;
+  }
+
+  #newEntryContainer{
+    padding-left:100px;
+    left:0px;
+  }
+
+  .App[data-convo-history-open="true"] #newEntryContainer{
+    opacity:0;
+  }
+
+  .App[data-convo-history-open="false"] #mic_transcript{
+    left:90px;
+  }
+
+  .App[data-convo-history-open="true"] #mic_transcript{
+    display:none;
+  }
+
+  #entries.active{
+    opacity:1;
+    transition: opacity .2s;
+  }
+
+  #bottomGradient.active{
+    transition: opacity 0s;
+  }
+
+  .App[data-convo-history-open="true"] #finishEntry, .App[data-convo-history-open="true"] #addEntry{
+    opacity:0;
+    pointer-events:none;
+
+  }
+
+}
+
+
+
+@media screen and (max-width: 650px) {
+
+  #newEntryContainer .title{
+    padding-right:0px;
+  }
+
+  #newEntryContainer .date{
+    top:100px;
+    right:20px;
+  }
+
+  .entry .cancel{
+    right:90px;
+    top:-30px;
+  }
+  .entry .save{
+    right:20px;
+    top:-30px;
+  }
+
+  #entries .entry[data-editing="true"]{
+    margin-top:50px;
+  }
+
+  #newEntryContainer{
+    padding-top:100px;
+    padding-left:0px;
+    padding-right:20px;
+    left:0px;
+  }
+
+  .App[data-convo-history-open="true"] #microphoneContainer{
+    opacity:0;
+    pointer-events:none;
+  }
+
+  .App[data-convo-history-open="false"] #entries{
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .App[data-convo-history-open="true"] #entries{
+    padding-left:20px;
+    padding-right:20px;
+  }
+
+  .App[data-convo-history-open="true"] #convoHistoryContainer, .App[data-convo-history-open="true"][data-active-entry="true"] #convoHistoryContainer{
+    width:100%;
+  }
+
+  #mic_transcript{
+    display:none;
+  }
+
+}
