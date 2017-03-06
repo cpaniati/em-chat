@@ -146,8 +146,16 @@ class Thread extends Component {
     });*/
   }
 
-  toggleEntryMenu(e){
+  onKeyDownEntry(e){
+    var el = e.currentTarget.parentNode;
+    window.isScrolledToBottom = el.scrollHeight - el.clientHeight <= el.scrollTop + 50;
+  }
 
+
+  onKeyPressEntry(e){
+    var el = e.currentTarget.parentNode;
+    if(window.isScrolledToBottom)
+      el.scrollTop = 100000;
   }
 
   renderNewEntry(){
@@ -159,7 +167,7 @@ class Thread extends Component {
         <div id="newEntryContainer">
           <div contentEditable="true" onBlur={this.blurEntryTitle.bind(this)} placeholder="Entry Title..." className="title">{title}</div>
           <div className="date">{today}</div>
-          <div contentEditable="true" onBlur={this.blurEntryText.bind(this)} placeholder="Entry Text..." className="entryInput">{text}</div>
+          <div contentEditable="true" onKeyDown={this.onKeyDownEntry.bind(this)} onKeyPress={this.onKeyPressEntry.bind(this)} onBlur={this.blurEntryText.bind(this)} placeholder="Entry Text..." className="entryInput">{text}</div>
         </div>
       );
     }

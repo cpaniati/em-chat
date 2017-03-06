@@ -825,6 +825,7 @@ body::after{
   outline:0px;
   line-height:25px;
   white-space:pre-line;
+  margin-bottom:100px;
 }
 
 #bottomGradient{
