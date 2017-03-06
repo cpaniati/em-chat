@@ -964,7 +964,7 @@ userLeftPage(){
           {thread.name}
         </div>
         <div style = {{opacity:'0',pointerEvents:'none'}} onKeyDown={this.threadTitleKeydown.bind(this)} data-thread-id={thread.id} className="threadTitleDummy" contentEditable={renamingThread}>
-          {thread.name}
+          {"Hi"}
         </div>
         <div style={{'background':thread.color}} className="threadColor"></div>
       </div>
@@ -1037,9 +1037,13 @@ userLeftPage(){
 
   blurRenameThread(e){
     var name=e.currentTarget.textContent;
-    name=ucFirstAllWords(name);
     var thread_id=this.state.renaming_thread_id;
-    this.renameFirebaseThread(thread_id, name);
+    if(name != ""){
+      name=ucFirstAllWords(name);
+      this.renameFirebaseThread(thread_id, name);
+    }else{
+      e.currentTarget.innerHTML = this.state.threads[thread_id].name;
+    }
   }
 
 
@@ -1254,38 +1258,55 @@ userLeftPage(){
     //var activeThreadColor='radial-gradient(ellipse at top center, rgba('+color.r+','+color.g+','+color.b+',.7) 0%, rgba('+color.r+','+color.g+','+color.b+',1) 100%)';
 
     var activeThreadColor=this.state.threads[this.state.active_thread].color;
-    var appInnerBG="transparent";
+    var photoBG="transparent";
     var bgImageToLoad='url("http://cdn.mysitemyway.com/etc-mysitemyway/webtreats/assets/posts/857/full/tileable-classic-nebula-space-patterns-6.jpg")';
-    clearTimeout(fadeBgIn);
+    clearTimeout(window.fadeBgIn);
     var new_color=activeThreadColor;
     if(this.state.active_thread=='everything'){
       activeThreadColor='transparent';
       new_color="#ffffff";
+      /*if(window.prevBackground){
+        window.fadeBgIn = setTimeout(function(){
+          $('.AppInner').css('background','#de5e5e');
+        },0);
+        window.fadeBgOut = setTimeout(function(){
+          $('.App').css('background','transparent');
+          $('.AppInner').addClass('fading').css('background','transparent');
+        },400);
+      }*/
     }else{
 
+    }
+    /*
+    if(window.prevBackground){
+      photoBG=window.prevBackground;
+      clearTimeout(window.clearBgTimeout);
+      window.clearBgTimeout = setTimeout(function(){
+        window.prevBackground=false;
+      },400);
     }
 
     if(this.state.threads[this.state.active_thread].name.toLowerCase().includes('dream')){
       activeThreadColor='#001';
+      window.prevBackground=bgImageToLoad;
       new_color=activeThreadColor;
       textColor="light";
       uiColor="light";
       trayColor="light";
-      var fadeBgIn = setTimeout(function(){
+      window.fadeBgIn = setTimeout(function(){
         $('.App').css('background',bgImageToLoad);
         $('.AppInner').addClass('fading').css('background','transparent');
       },400);
-      var fadeBgOut = setTimeout(function(){
-        $('.AppInner').removeClass('fading');
-      },1400);
-      appInnerBG="#001";
+      photoBG=bgImageToLoad;
+    }else{
     }
+    */
 
     var active_entry=(this.state.active_entry ? true : false);
     return (
-      <div className="App" data-top-nav-hidden={this.state.topNavHidden} data-tray-color={trayColor} data-ui-color={uiColor} data-text-color={textColor} onClick={this.appClick.bind(this)} style={{background:activeThreadColor}} data-active-entry={active_entry} data-convo-history-open={this.state.convoHistoryOpen} data-threads-open={this.state.threads_nav_visible}>
+      <div className="App" data-top-nav-hidden={this.state.topNavHidden} data-tray-color={trayColor} data-ui-color={uiColor} data-text-color={textColor} onClick={this.appClick.bind(this)} style={{background:photoBG}} data-active-entry={active_entry} data-convo-history-open={this.state.convoHistoryOpen} data-threads-open={this.state.threads_nav_visible}>
         {this.renderLogo()}
-        <div className="AppInner" style={{background:appInnerBG}}>
+        <div className="AppInner" style={{background:activeThreadColor}}>
           {this.renderColorPicker()}
           {this.renderMicrophone()}
           {this.renderConvoHistory()}

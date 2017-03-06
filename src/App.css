@@ -12,6 +12,7 @@ body, html{
   right:0px;
   bottom:0px;
   position:fixed;
+  overflow:hidden;
 }
 
 body::after{
@@ -24,6 +25,7 @@ body::after{
   width: 100%;
   position: absolute;
   transition:background .4s;
+  background:transparent;
 }
 
 .AppInner{
@@ -37,19 +39,16 @@ body::after{
   transition:opacity 1s, background .4s;
 }
 
+/*
 .AppInner.fading{
   background-delay:.2s;
   transition:opacity 1s, background 1s;
-}
+}*/
 
 .AppInner:empty{
   opacity:0;
 }
 
-#backgroundLoader{
-  opacity:0;
-  pointer-events:none;
-}
 
 /********* NAVIGATION, LOGO, HEADER *********/
 
