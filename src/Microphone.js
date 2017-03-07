@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import $ from "jquery";
 
 
 var two_line=/\n\n/g;
@@ -61,7 +61,12 @@ function editDistance(s1, s2) {
   return costs[s2.length];
 }
 
-
+function popup(message){
+  $('#popup').html(message).addClass('active');
+  setTimeout(function(){
+    $('#popup').removeClass('active');
+  },6000);
+}
 
 class Microphone extends Component {
 
@@ -104,7 +109,7 @@ class Microphone extends Component {
       this.setState({ recognition:recognition });
     } else {
       this.setState({ browserSupportsSpeechRecognition: false });
-      alert("browser doesn't support speech recognition. Please use Chrome instead.");
+      popup("<b>This browser doesn't support speech recognition. </b>Please use Chrome Desktop for this.");
     }
   }
 

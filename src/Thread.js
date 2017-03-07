@@ -184,12 +184,15 @@ class Thread extends Component {
     color=hexToRgb(color);
 
     var gradientVisible = true;
+    var dashboard_disclaimer = false;
     if(this.props.active_thread_data.id=="everything"){
       gradientVisible = false;
+      dashboard_disclaimer = true;
     }
 
     return (
       <div id="threadPage">
+        <div id="dashboard_disclaimer" data-visible={dashboard_disclaimer}>Dashboard Coming Soon!</div>
         {this.renderEntryNav()}
         {this.renderEntries()}
         <div id="newEntryWrap">{this.renderNewEntry()}</div>

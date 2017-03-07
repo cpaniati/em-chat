@@ -230,6 +230,53 @@ body::after{
   z-index:10;
 }
 
+#convoDisclaimer{
+  position: absolute;
+  font-size: 55px;
+  font-weight: bold;
+  width: 80%;
+  margin-left: 10%;
+  opacity: .1;
+}
+
+#dashboard_disclaimer{
+  position: absolute;
+  font-size: 55px;
+  font-weight: bold;
+  width: 300px;
+  left:50%;
+  margin-left:-150px;
+  top:100px;
+  opacity: .1;
+}
+
+#dashboard_disclaimer[data-visible="false"]{
+  display:none!important;
+}
+
+.App[data-convo-history-open="true"] #dashboard_disclaimer{
+  display:none!important;
+}
+
+#popup{
+  padding:30px;
+  background:white;
+  box-shadow:0px 1px 5px rgba(0,0,0,.2);
+  border-radius:2px;
+  position:fixed;
+  right:90px;
+  bottom:-120px;
+  transition: bottom .4s, opacity .4s;
+  opacity:0;
+  line-height:30px;
+  max-width:380px;
+}
+
+#popup.active{
+  bottom:90px;
+  opacity:1;
+}
+
 /*
 #convoHistoryContainer[data-style="entry"]{
   width:50%;
@@ -289,6 +336,7 @@ body::after{
 #convoHistory{
   padding-top: 20px;
   overflow-y: scroll; /* has to be scroll, not auto */
+  overflow-y:auto;
   -webkit-overflow-scrolling: touch;
   position:absolute;
   bottom:90px;
@@ -309,6 +357,7 @@ body::after{
   box-sizing:border-box;
   padding-top: 20px;
   overflow-y: scroll; /* has to be scroll, not auto */
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   position:absolute;
   bottom:90px;
@@ -539,6 +588,7 @@ body::after{
   right:90px;
   white-space:nowrap;
   overflow-x:scroll;
+  overflow-x:auto;
   overflow-y: hidden; /* has to be scroll, not auto */
   -webkit-overflow-scrolling: touch;
   padding-left:5px;
@@ -762,6 +812,7 @@ body::after{
   top: 0px;
   bottom: 0px;
   overflow-y:scroll;
+  overflow-y:auto;
   -webkit-overflow-scrolling: touch;
   padding-bottom:90px;
   opacity:1;
@@ -781,7 +832,7 @@ body::after{
     outline:0px;
     color:white;
     transition: color .4s;
-    padding-right:100px;
+    padding-right:150px;
 }
 
 #newEntryContainer .title[contenteditable=true]:empty:before{
@@ -831,7 +882,7 @@ body::after{
 #bottomGradient{
   left: 0px;
   right: 0px;
-  height: 120px;
+  height: 50px;
   bottom: 0px;
   position: absolute;
   pointer-events:none;
@@ -1034,10 +1085,10 @@ body::after{
   transition:width .2s, left .2s, right .2s, max-width .2s, padding-left .2s, opacity 0s;
   opacity:0;
   bottom:0px;
-  overflow:scroll;
   padding-right:90px;
   padding-left:50%;
   overflow-y: scroll; /* has to be scroll, not auto */
+  overflow-y:auto;
   overflow-x:hidden;
   -webkit-overflow-scrolling: touch;
   padding-bottom:150px;
@@ -1345,6 +1396,10 @@ body::after{
 
 
 @media screen and (max-width: 650px) {
+
+  #bottomGradient{
+    height:100px;
+  }
 
   .App[data-top-nav-hidden="true"] #logo{
     left:-80px!important;

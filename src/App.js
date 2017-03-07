@@ -12,6 +12,13 @@ import ColorPicker from './ColorPicker';
 import Microphone from './Microphone';
 import * as firebase from 'firebase';
 import $ from "jquery";
+/*import {ApiAiClient, ApiAiStreamClient} from "api-ai-javascript";
+
+
+const client = new ApiAiClient({accessToken: 'YOUR_ACCESS_TOKEN', streamClientClass: ApiAiStreamClient});
+client.textRequest('Hello!')
+    .then((response) => {console.log(response); alert('response!')})
+    .catch((error) => {})*/
 
 
 function hexToRgb(hex) {
@@ -835,7 +842,6 @@ userLeftPage(){
       }
       return(
         <div id="convoHistoryContainer" data-style={convoStyle} data-open={this.state.convoHistoryOpen}>
-          <div contentEditable="true" style={{color:activeThreadColor}} className="entryTitle" placeholder="Title..."></div>
           {this.renderConvoHistoryInner()}
           <div placeholder="type here..." onKeyDown={this.convoInputKeydown.bind(this)} onKeyUp={this.convoInputKeydown.bind(this)} id="convoInput" contentEditable="true"></div>
           <div id="convoHistoryButton" onClick={this.toggleConvoHistory.bind(this)}>
@@ -855,6 +861,7 @@ userLeftPage(){
       </div>);
     }else{*/
       return(<div id="convoHistory" style={{bottom:this.state.convoInputHeight}}>
+        <div id = "convoDisclaimer">Chatbot Coming Soon!</div>
         {this.state.convoHistory.map(this.renderConvoHistoryItem.bind(this))}
       </div>);
     //}
