@@ -5,14 +5,16 @@
   "devDependencies": {
     "api-ai-javascript": "^2.0.0-beta.19",
     "react-scripts": "0.9.0",
-    "script-loader": "^0.7.0"
+    "script-loader": "^0.7.0",
+    "imports-loader": "^0.6.5"
   },
   "dependencies": {
     "firebase": "^3.6.9",
     "react": "^15.4.2",
     "react-cookie": "^1.0.4",
     "react-dom": "^15.4.2",
-    "react-speech-recognition": "^1.0.1"
+    "react-speech-recognition": "^1.0.1",
+    "snapsvg": "^0.4.0"
   },
   "scripts": {
     "start": "react-scripts start",

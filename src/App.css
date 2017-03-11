@@ -52,6 +52,23 @@ body::after{
 
 /********* NAVIGATION, LOGO, HEADER *********/
 
+#em_container{
+  overflow:visible;
+  position:absolute;
+  width:40px;
+  height:40px;
+  /*top:200px;
+  left:200px;
+  transition:left .3s linear, top .3s linear;*/
+  transform:translate3d(200px, 200px, 0px);
+  transition:transform .3s linear;
+  fill:#fff;
+}
+
+.App[data-ui-color="dark"] #em_body{
+  fill:#444;
+}
+
 #logo{
   display:block;
   left: 28px;
@@ -60,15 +77,15 @@ body::after{
   position:fixed;
   z-index:1000000000000000;
   opacity:1;
-  transition:opacity .2s, left .2s, height .2s, width .2s, top .2s;
+  transition:opacity .2s, left .2s, top .2s;
   pointer-events:none;
 }
 
 
 
 .App[data-ui-color="dark"] #logo{
-    left:30px;
-    top:30px;
+    margin-left:2px;
+    margin-top:2px;
     height:25px;
 }
 
@@ -189,7 +206,7 @@ body::after{
 }
 
 .App[data-ui-color="dark"] #micLevels .level{
-  border-top:1px solid white;
+  border-top:1px solid #444;
 }
 
 #micLevels .level:first-child{
@@ -231,6 +248,7 @@ body::after{
 }
 
 #convoDisclaimer{
+  display:none;
   position: absolute;
   font-size: 55px;
   font-weight: bold;
@@ -335,6 +353,7 @@ body::after{
 
 #convoHistory{
   padding-top: 20px;
+  padding-bottom: 100px;
   overflow-y: scroll; /* has to be scroll, not auto */
   overflow-y:auto;
   -webkit-overflow-scrolling: touch;
@@ -503,6 +522,16 @@ body::after{
   transition: border .4s, color .4s;
 }
 
+.App[data-recording="true"] #convoInput[data-show-mic="true"]{
+  background:url('micIcon_light.svg') bottom 10px right 10px no-repeat;
+  background-size:15px;
+}
+
+.App[data-ui-color="dark"][data-recording="true"] #convoInput[data-show-mic="true"]{
+  background:url('micIcon_dark.svg') bottom 10px right 10px no-repeat;
+  background-size:15px;
+}
+
 .App[data-text-color="dark"] #convoInput{
   color:#222;
 }
@@ -515,7 +544,7 @@ body::after{
   color:rgba(255,255,255,.3);
 }
 
-.App[data-text-color="dark"] #convoInput[contenteditable=true]:empty{
+.App[data-tray-color="dark"] #convoInput[contenteditable=true]:empty{
   color:rgba(0,0,0,.35);
 }
 
@@ -868,7 +897,7 @@ body::after{
 
 #newEntryContainer .entryInput{
   position: relative;
-  background: white;
+  background-color: white;
   padding: 25px;
   box-shadow: 0px 2px 8px rgba(0,0,0,.15);
   min-height: 100px;
@@ -878,6 +907,14 @@ body::after{
   white-space:pre-line;
   margin-bottom:100px;
 }
+
+.App[data-recording="true"] #newEntryContainer .entryInput[data-show-mic="true"]{
+  background-image:url('micIcon_dark.svg');
+  background-repeat: no-repeat;
+  background-position: bottom 10px right 10px;
+  background-size:15px;
+}
+
 
 #bottomGradient{
   left: 0px;

@@ -57,13 +57,13 @@ class Thread extends Component {
 
   renderEntries(){
     if(this.props.thread_has_entries && this.props.entries_are_loaded){
-      console.log('thread has entries');
-      console.log(this.props.active_thread_entries);
+      //console.log('thread has entries');
+      //console.log(this.props.active_thread_entries);
       return(<div id="entries" onScroll={this.scrollEntries.bind(this)}>
         {Object.keys(this.props.active_thread_entries).map(this.renderEntry.bind(this))}
       </div>);
     }else{
-      console.log('thread has no entries');
+      //console.log('thread has no entries');
     }
   }
 
@@ -158,7 +158,12 @@ class Thread extends Component {
       el.scrollTop = 100000;
   }
 
+  setFocus(e){
+    this.props.setMicFocus("entry");
+  }
+
   renderNewEntry(){
+    var show_mic = (this.props.mic_location=="entry"?true:false);
     if(this.props.active_entry){
       var today=new Date().toISOString().replace(/z|t/gi,' ').trim().slice(0,-12);
       var title=(this.props.entry_data.title != false ? this.props.entry_data.title : "");
@@ -167,7 +172,7 @@ class Thread extends Component {
         <div id="newEntryContainer">
           <div contentEditable="true" onBlur={this.blurEntryTitle.bind(this)} placeholder="Entry Title..." className="title">{title}</div>
           <div className="date">{today}</div>
-          <div contentEditable="true" onKeyDown={this.onKeyDownEntry.bind(this)} onKeyPress={this.onKeyPressEntry.bind(this)} onBlur={this.blurEntryText.bind(this)} placeholder="Entry Text..." className="entryInput">{text}</div>
+          <div data-show-mic={show_mic} contentEditable="true" onFocus={this.setFocus.bind(this)} onKeyDown={this.onKeyDownEntry.bind(this)} onKeyPress={this.onKeyPressEntry.bind(this)} onBlur={this.blurEntryText.bind(this)} placeholder="Entry Text..." className="entryInput">{text}</div>
         </div>
       );
     }
@@ -178,7 +183,7 @@ class Thread extends Component {
   render() {
     var color=this.props.active_thread_data.color;
     if(this.props.new_color != false){
-      console.log('using new color');
+      //console.log('using new color');
       color=this.props.new_color;
     }
     color=hexToRgb(color);

@@ -12,13 +12,27 @@ import ColorPicker from './ColorPicker';
 import Microphone from './Microphone';
 import * as firebase from 'firebase';
 import $ from "jquery";
-/*import {ApiAiClient, ApiAiStreamClient} from "api-ai-javascript";
+//import Snap from 'snapsvg';
+//window.snap = require('snapsvg');
+//window.snap = require( "imports-loader?this=>window,fix=>module.exports=0!snapsvg/dist/snap.svg.js" );
+//import Snap from './snap.svg.js';
+//import Snap from './snap.svg.js';
+//import {ApiAiClient, ApiAiStreamClient} from "./api-ai.js";
+
+var accessToken = "d42fac059d4c46b8af673d2e0fc7ff15";
+var baseUrl = "https://api.api.ai/v1/";
 
 
-const client = new ApiAiClient({accessToken: 'YOUR_ACCESS_TOKEN', streamClientClass: ApiAiStreamClient});
-client.textRequest('Hello!')
-    .then((response) => {console.log(response); alert('response!')})
-    .catch((error) => {})*/
+
+
+
+/*const client = new ApiAiClient({accessToken: 'YOUR_ACCESS_TOKEN', streamClientClass: ApiAiStreamClient});
+setTimeout(function(){
+  client.textRequest('Hello!')
+      .then((response) => {console.log(response); alert('response!')})
+      .catch((error) => {});
+},10000);*/
+
 
 
 function hexToRgb(hex) {
@@ -122,7 +136,8 @@ window.initialState={
   convoHistory:[],
   transcripts:[],
   thread_menu_left:60,
-  entries_loaded:false
+  entries_loaded:false,
+  mic_location:"convo"
 };
 
 
@@ -137,7 +152,7 @@ class App extends Component {
       face_logged_in:false,
       fire_logged_in:false,
       active_thread:"everything",
-      threads:{"everything":{id:"everything",name:"Loading...",color:"#FF7878",textColor:"dark",uiColor:"light",entries:{}}},
+      threads:{"everything":{id:"everything",name:"Loading...",color:"#FF7878",brightness:150,entries:{}}},
       loaded_threads:{},
       entries:{},
       active_entry:false,
@@ -151,7 +166,8 @@ class App extends Component {
       transcripts:[],
       thread_menu_left:60,
       entries_loaded:false,
-      topNavHidden:false
+      topNavHidden:false,
+      microphoneOn:false
     };
   }
 
@@ -178,6 +194,171 @@ class App extends Component {
       convoHistoryVisible:true,
       threads_nav_visible:true
     });
+
+  }
+
+  renderEmContainer(){
+    var highlightColor = (this.state.active_thread!="everything"?this.state.threads[this.state.active_thread].color:"#ff9e9e");
+    if(this.state.fire_logged_in){
+      return(
+        <svg id="em_container">
+           <circle id="em_body" cx={20} cy={20} r={20} fill="white" />
+           <circle id="em_highlight" cx={30} cy={10} r={2} fill={highlightColor} />
+         </svg>);
+    }
+  }
+
+  launchEMBubble(){
+
+    //****************** EM BUBBLE *********************//
+
+    window.em_radar_speed = 2000;
+    window.em_speed = 5;
+    window.em_xPos = 0;
+    window.em_yPos = 0;
+
+    var xPos = window.em_xPos;
+    var yPos = window.em_yPos;
+    var emSpeed = window.em_speed;
+    var radarSpeed = window.em_radar_speed;
+    var currentMood = 'neutral';
+
+
+    /*
+    console.log('loading EM...');
+    var emBody;
+  	//var s = Snap("#em-container");
+  	//var sr = Snap("#em-radar-container");
+
+  	emBody = s.circle(200, 200, 20);
+
+  	emBody.attr({
+  			id:"emBody"
+  	});
+
+  	var emHighlight = s.circle(210, 190, 2);
+
+  	emHighlight.attr({
+  			fill: "#ffffff"
+  	});
+
+  	var em = s.group(emBody, emHighlight);
+
+
+  	var emRadar = s.circle(200, 200, 1);
+
+  	var emRadarClass = "emRadar";
+  	if(currentMood == "sad"){
+  		emRadarClass += " sad";
+  	}
+
+  	emRadar.attr({
+  			fill: "#FF9E9E",
+  			opacity:.1,
+  			id:"radar"+0
+  	});
+
+  	var emRadarObj = {width:0,height:0,opacity:.2};
+
+  	emHighlight.transform("t-7,-3");
+    */
+
+
+  	window.pageHeight = $(window).height() - 130;
+  	window.pageWidth = .3*$(window).width()+30;
+
+  	$(window).resize(function(){
+  		window.pageHeight = $(window).height() - 130;
+  		window.pageWidth = .3*$(window).width()+30;
+  	});
+
+  	//em.transform("t"+pageWidth/3+","+pageHeight/3);
+
+
+  	var minVal = -.2;
+  	var maxVal = .2;
+  	var direction = 0;
+  	var rInertia = 0;
+  	var radars = [];
+  	var radarsData = [];
+
+    /*
+  	var counter = 0;
+  	window.radarBlinker = function(){
+  			var object = {width:0,height:0,opacity:.2};
+  			radarsData.push(object);
+  			counter++;
+  			var radarObj = sr.circle(xPos+200, yPos+200, 1);
+  			radarObj.attr({
+  					fill: "#FF9E9E",
+  					opacity:.1,
+  					id:"radar"+counter
+  			});
+
+  			$('#radar'+counter).addClass("emRadar "+currentMood);
+
+  			radars[radars.length] = radarObj;
+
+  			radarObj.animate({ transform: "s"+1000+" "+1000, opacity:0}, 10000 );
+
+  	}*/
+  	window.radarBlink = setInterval(window.radarBlinker, radarSpeed);
+
+  	  var emMovement = setInterval(function(){
+
+      var em=$('#em_container');
+  		var rChange = Math.random()*.2-.1;
+  		rInertia += rChange;
+  		direction += rInertia;
+  		//console.log('r:'+rInertia+' d:'+direction+' x:'+xPos+' y:'+yPos);
+  		if(xPos < -30){
+  			xPos += (xPos+30)*-.1;
+  		}else if (xPos > 30){
+  			xPos -= (xPos-30)*.1;
+  		}
+  		if(yPos < -30){
+  			yPos += (yPos+30)*-.1;
+  		}else if (yPos > 300){
+  			yPos -= (yPos - 300)*.1;
+  		}
+  		xPos += Math.sin(direction)*emSpeed;
+  		yPos += Math.cos(direction)*emSpeed;
+
+  		//emHighlight.animate({ transform: "t"+(2-((xPos+200) * 6 - (yPos)*2)/150).toFixed(2)+" "+(-((xPos+200) * 6 - (yPos)*2)/300).toFixed(2)}, 200 );
+
+  		if(rInertia > maxVal){
+  			rInertia = maxVal;
+  		}else if(rInertia < minVal){
+  			rInertia = minVal;
+  		}
+
+  		//em.animate({ transform: "t"+xPos+" "+yPos}, 200 );
+      //console.log(xPos+', '+yPos);
+      //em.css({ left:xPos+200,top:yPos+200});
+      em.css("transform","translate3d("+(xPos+200)+"px, "+(yPos+200)+"px, 0px)");
+  	},200);
+
+
+
+    /*
+  	var emRadarGen = setInterval(function(){
+			for(var i=0;i<radars.length;i++){
+
+  			radarsData[i].width+=20;
+  			radarsData[i].height+=20;
+  			radarsData[i].opacity-=.005;
+  			if(Number(radarsData[i].width) > 1000){
+  				radarsData.splice(i,1);
+  				//console.log(sr.select("#"+radars[i].id));
+  				sr.select("#"+radars[i].node.id).removeData();
+  				sr.select("#"+radars[i].node.id).remove();
+  				//console.log(radars[i].node.id);
+  				radars.splice(i,1);
+  				return;
+  			}
+			}
+		},200);*/
+
   }
 
   componentDidUpdate(){
@@ -299,7 +480,7 @@ userLeftPage(){
           fire_logged_in:true,
           user:user,
           threads:threads
-        });
+        }, this.launchEMBubble.bind(this));
         this.getFirebaseThreadData(fid);
       }
     });
@@ -686,7 +867,7 @@ userLeftPage(){
 
   pass_final_transcript(final_transcript,overwrite){
       var convoHistory=this.state.convoHistory;
-      if(this.state.active_entry){
+      if(this.state.mic_location=='entry' && this.state.active_entry){
         //store as entry
         var entries=this.state.entries;
         var entry=entries[this.state.active_entry];
@@ -720,8 +901,40 @@ userLeftPage(){
         this.setState({
           convoHistory:convoHistory
         });
+        this.send_Api_Ai(final_transcript);
       }
   }
+
+
+  send_Api_Ai(text) {
+  			$.ajax({
+  				type: "POST",
+  				url: baseUrl + "query?v=20150910",
+  				contentType: "application/json; charset=utf-8",
+  				dataType: "json",
+  				headers: {
+  					"Authorization": "Bearer " + accessToken
+  				},
+  				data: JSON.stringify({ query: text, lang: "en", sessionId: "somerandomthing" }),
+  				success: function(data) {
+            console.log(data);
+            var convoHistory=this.state.convoHistory;
+            convoHistory.push({id:convoHistory.length,text:data.result.fulfillment.speech,type:'bot',created_date:Date.now()});
+            this.setState({convoHistory:convoHistory}, function(){
+              console.log($("#convoHistory")[0].clientHeight - $("#convoHistory")[0].scrollHeight);
+              $("#convoHistory").animate({ scrollTop: $("#convoHistory")[0].scrollHeight - $("#convoHistory")[0].clientHeight });
+            });
+            //console.log(JSON.stringify(data, undefined, 2));
+  				}.bind(this),
+  				error: function() {
+  					console.log("Internal Server Error");
+  				}
+  			});
+  		}
+
+      setMicFocus(location){
+        this.setState({mic_location:location});
+      }
 
 
 
@@ -730,6 +943,8 @@ userLeftPage(){
   toggleConvoHistory(e){
     this.setState({
       convoHistoryOpen:!this.state.convoHistoryOpen
+    },function(){
+      $('#convoInput').focus();
     });
   }
 
@@ -777,11 +992,16 @@ userLeftPage(){
     if(this.state.microphoneVisible && this.state.fire_logged_in){
       return(
         <Microphone
+          toggleMic={this.toggleMic.bind(this)}
           microphoneOn={this.state.microphoneOn}
           pass_final_transcript={this.pass_final_transcript.bind(this)}
         />
       );
     }
+  }
+
+  toggleMic(mic_setting){
+    this.setState({microphoneOn:mic_setting});
   }
 
   updateConvoInputHeight(height){
@@ -810,15 +1030,13 @@ userLeftPage(){
         if(this.state.active_entry){
           var entries=this.state.entries;
           var entry=entries[this.state.active_entry];
-          var transcriptLength=Object.keys(entry.transcript).length;
-          entry.transcript["log"+String(transcriptLength+1)]={};
-          entry.transcript["log"+String(transcriptLength+1)].text=text;
-          entry.transcript["log"+String(transcriptLength+1)].date=Date.now();
-          entry.transcript["log"+String(transcriptLength+1)].id="log"+String(transcriptLength+1);
+          var convoHistory=this.state.convoHistory;
+          convoHistory.push({id:convoHistory.length,text:text,type:'user'});
           input.innerHTML="";
           this.setState({
-            entries:entries
+            convoHistory:convoHistory
           });
+          this.send_Api_Ai(text);
         }else{
           var convoHistory=this.state.convoHistory;
           convoHistory.push({id:convoHistory.length,text:text,type:'user'});
@@ -826,9 +1044,14 @@ userLeftPage(){
           this.setState({
             convoHistory:convoHistory
           });
+          this.send_Api_Ai(text);
         }
       }
     }
+  }
+
+  convoInputOnFocus(e){
+    this.setMicFocus("convo");
   }
 
   renderConvoHistory(){
@@ -840,10 +1063,11 @@ userLeftPage(){
         convoStyle="entry";
         entryVisible=true;
       }
+      var show_mic = (this.state.mic_location=="convo" && this.state.mic_location=="convo"?true:false);
       return(
         <div id="convoHistoryContainer" data-style={convoStyle} data-open={this.state.convoHistoryOpen}>
           {this.renderConvoHistoryInner()}
-          <div placeholder="type here..." onKeyDown={this.convoInputKeydown.bind(this)} onKeyUp={this.convoInputKeydown.bind(this)} id="convoInput" contentEditable="true"></div>
+          <div data-show-mic={show_mic} placeholder="type here..." onFocus={this.convoInputOnFocus.bind(this)} onKeyDown={this.convoInputKeydown.bind(this)} onKeyUp={this.convoInputKeydown.bind(this)} id="convoInput" contentEditable="true"></div>
           <div id="convoHistoryButton" onClick={this.toggleConvoHistory.bind(this)}>
             <div className="level"></div>
             <div className="level"></div>
@@ -1140,7 +1364,7 @@ userLeftPage(){
             active_thread_entries[key]=this.state.entries[key];
             entries_are_loaded=true;
           }else{
-            console.log('couldnt find entry');
+            //console.log('couldnt find entry');
             entries_are_loaded=false;
           }
         }.bind(this));
@@ -1152,6 +1376,8 @@ userLeftPage(){
       console.log(Object.keys(this.state.entries).length);*/
 
       return(<Thread
+        mic_location={this.state.mic_location}
+        setMicFocus={this.setMicFocus.bind(this)}
         showTopNav={this.showTopNav.bind(this)}
         hideTopNav={this.hideTopNav.bind(this)}
         new_color={new_color}
@@ -1311,9 +1537,10 @@ userLeftPage(){
 
     var active_entry=(this.state.active_entry ? true : false);
     return (
-      <div className="App" data-top-nav-hidden={this.state.topNavHidden} data-tray-color={trayColor} data-ui-color={uiColor} data-text-color={textColor} onClick={this.appClick.bind(this)} style={{background:photoBG}} data-active-entry={active_entry} data-convo-history-open={this.state.convoHistoryOpen} data-threads-open={this.state.threads_nav_visible}>
+      <div className="App" data-recording={this.state.microphoneOn} data-top-nav-hidden={this.state.topNavHidden} data-tray-color={trayColor} data-ui-color={uiColor} data-text-color={textColor} onClick={this.appClick.bind(this)} style={{background:photoBG}} data-active-entry={active_entry} data-convo-history-open={this.state.convoHistoryOpen} data-threads-open={this.state.threads_nav_visible}>
         {this.renderLogo()}
         <div className="AppInner" style={{background:activeThreadColor}}>
+          {this.renderEmContainer()}
           {this.renderColorPicker()}
           {this.renderMicrophone()}
           {this.renderConvoHistory()}

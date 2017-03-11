@@ -129,16 +129,14 @@ class Microphone extends Component {
 
   onaudiostart(){
     console.log('speech recognition audio started');
-    this.setState({
-      microphoneOn:true
-    }, this.toggleMicAnimation.bind(this));
+    this.props.toggleMic(true);
+    this.toggleMicAnimation.bind(this);
   }
 
   onaudioend(){
     console.log('speech recognition audio ended');
-    this.setState({
-      microphoneOn:false
-    }, this.toggleMicAnimation.bind(this));
+    this.props.toggleMic(false);
+    this.toggleMicAnimation.bind(this);
   }
 
   onsoundstart(){
@@ -213,7 +211,7 @@ class Microphone extends Component {
     if (!final_transcript) {
       return;
     }*/
-    if(this.state.microphoneOn){
+    if(this.props.microphoneOn){
       this.state.recognition.stop();
       this.state.recognition.start();
     }
@@ -266,7 +264,7 @@ class Microphone extends Component {
   }
 
   toggleMicAnimation(){
-    if(this.state.microphoneOn){
+    if(this.props.microphoneOn){
       window.micAnim=setInterval(function(){
         var micAnimationLevels=this.state.micAnimationLevels;
         for(var i=4; i > 0; i--){
@@ -302,7 +300,7 @@ class Microphone extends Component {
   }
 
   toggleMic(e){
-    if (this.state.microphoneOn) {
+    if (this.props.microphoneOn) {
       this.state.recognition.stop();
       //return;
     }else{
@@ -328,7 +326,7 @@ class Microphone extends Component {
   render() {
 
     return (
-      <div id="microphoneContainer" onClick={this.toggleMic.bind(this)} data-recording={this.state.microphoneOn}>
+      <div id="microphoneContainer" onClick={this.toggleMic.bind(this)} data-recording={this.props.microphoneOn}>
         <div id="mic_transcript">{this.state.mic_transcript}</div>
         <div id="microphone">
           <div id="micInner"></div>
