@@ -45,8 +45,10 @@ class Entry extends Component {
   clickSaveEdit(e){
     this.setState({editing:false});
     var target=e.currentTarget;
-    var text=$(target).parent().find('.text')[0].innerText;
-    var title=$(target).parent().find('.title')[0].innerText;
+    var textElement=$(target).parent().find('.text')[0];
+    var titleElement=$(target).parent().find('.title')[0];
+    var text=textElement.innerText;
+    var title=titleElement.innerText;
     this.props.saveEntryEdit(this.props.entry_id,text, title);
   }
 

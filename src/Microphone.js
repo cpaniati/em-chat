@@ -129,14 +129,10 @@ class Microphone extends Component {
 
   onaudiostart(){
     console.log('speech recognition audio started');
-    this.props.toggleMic(true);
-    this.toggleMicAnimation.bind(this);
   }
 
   onaudioend(){
     console.log('speech recognition audio ended');
-    this.props.toggleMic(false);
-    this.toggleMicAnimation.bind(this);
   }
 
   onsoundstart(){
@@ -203,6 +199,14 @@ class Microphone extends Component {
 
   onendRecognition(event) {
     console.log('speech recognition ended!');
+    if(this.props.microphoneOn){
+      this.state.recognition.stop();
+      this.state.recognition.start();
+    }else{
+        //this.toggleMicAnimation(false);
+    }
+    //this.props.toggleMic(false);
+
     //recognizing=false;
     /*if (ignore_onend) {
       return;
@@ -211,10 +215,6 @@ class Microphone extends Component {
     if (!final_transcript) {
       return;
     }*/
-    if(this.props.microphoneOn){
-      this.state.recognition.stop();
-      this.state.recognition.start();
-    }
     /*
     if (window.getSelection) {
       window.getSelection().removeAllRanges();
@@ -249,6 +249,8 @@ class Microphone extends Component {
   onstartRecognition() {
     //recognizing=true;
     console.log('speech recognition started');
+    this.props.toggleMic(true);
+
     //show mic animation
   };
 
@@ -263,8 +265,9 @@ class Microphone extends Component {
     }.bind(this),1000);
   }
 
-  toggleMicAnimation(){
-    if(this.props.microphoneOn){
+  toggleMicAnimation(setting){
+    if(setting){
+      console.log('microphone is on');
       window.micAnim=setInterval(function(){
         var micAnimationLevels=this.state.micAnimationLevels;
         for(var i=4; i > 0; i--){
@@ -287,6 +290,7 @@ class Microphone extends Component {
         });
       }.bind(this),200);
     }else{
+      console.log('microphone is off');
       var micAnimationLevels=this.state.micAnimationLevels;
       for(var i=4; i >= 0; i--){
         micAnimationLevels[i]=0;
@@ -300,11 +304,14 @@ class Microphone extends Component {
   }
 
   toggleMic(e){
+    this.props.toggleMic(false);
     if (this.props.microphoneOn) {
       this.state.recognition.stop();
+      this.toggleMicAnimation(false);
       //return;
     }else{
       this.state.recognition.start();
+      this.toggleMicAnimation(true);
     }
     final_transcript='';
     //recognition.lang=select_dialect.value;

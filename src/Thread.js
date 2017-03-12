@@ -110,13 +110,38 @@ class Thread extends Component {
     this.props.finishEntry(this.props.active_entry);
   }
 
+  mainMenuButtonClick(e){
+    this.props.toggleMainMenu();
+  }
+
+  renderMainMenu(){
+    return(<div id="mainMenuWrap">
+      <div key="menuButton" id="mainMenuButton" onClick={this.mainMenuButtonClick.bind(this)}>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div key="mainMenu" id="mainMenu" data-visible={this.props.mainMenuVisible}>
+        <div key="logout" id="logout" onClick={this.props.logout.bind(this)}>logout</div>
+      </div>
+    </div>)
+  }
+
   renderEntryNav(){
-    if(this.props.active_thread == "everything"){
-      return(<div onClick={this.props.logout.bind(this)} style={{color:this.props.active_thread_data.color}} id="logout">Logout</div>);
+    if(this.props.active_thread=="everything" && !this.props.active_entry){
+      return(<div>
+        {this.renderMainMenu()}
+        <div key="addEntry" data-home="true" onClick={this.newEntryClick.bind(this)} style={{color:this.props.active_thread_data.color}} id="addEntry">+</div>
+      </div>);
     }else if(!this.props.active_entry && this.props.active_thread && this.props.active_thread != "everything"){
-      return(<div onClick={this.newEntryClick.bind(this)} style={{color:this.props.active_thread_data.color}} id="addEntry">+</div>);
+      return(<div>
+        {this.renderMainMenu()}
+        <div key="addEntry" onClick={this.newEntryClick.bind(this)} style={{color:this.props.active_thread_data.color}} id="addEntry">+</div>
+      </div>);
     }else if(this.props.active_entry && this.props.active_thread){
-      return(<div onClick={this.finishEntryClick.bind(this)} style={{color:this.props.threads[this.props.active_thread].color}} id="finishEntry">Done</div>);
+      return(<div>
+        <div key="finishEntry" onClick={this.finishEntryClick.bind(this)} style={{color:this.props.threads[this.props.active_thread].color}} id="finishEntry">Done</div>
+      </div>);
     }
   }
 
@@ -182,7 +207,7 @@ class Thread extends Component {
 
   render() {
     var color=this.props.active_thread_data.color;
-    if(this.props.new_color != false){
+    if(this.props.new_color != false ){
       //console.log('using new color');
       color=this.props.new_color;
     }
@@ -190,7 +215,7 @@ class Thread extends Component {
 
     var gradientVisible = true;
     var dashboard_disclaimer = false;
-    if(this.props.active_thread_data.id=="everything"){
+    if(this.props.active_thread=="user"){
       gradientVisible = false;
       dashboard_disclaimer = true;
     }

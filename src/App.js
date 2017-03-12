@@ -119,25 +119,27 @@ provider.setCustomParameters({
 });
 
 window.initialState={
-  login_visible:true,
+  login_visible:false,
   face_logged_in:false,
   fire_logged_in:false,
-  active_thread:"everything",
-  threads:{"everything":{id:"everything",name:"Loading...",color:"#FF7878",textColor:"dark",uiColor:"light",entries:{}}},
+  active_thread:"user",
+  threads:{"user":{id:"user",name:"Loading...",color:"#FF7878",brightness:150},"everything":{id:"everything",name:"Everything",color:"#FF7878",brightness:150,entries:{}}},
   loaded_threads:{},
   entries:{},
   active_entry:false,
   user:{},
-  microphoneVisible:false,
-  threads_nav_visible:false,
+  microphoneVisible:true,
+  convoHistoryVisible:true,
+  threads_nav_visible:true,
   micAnimationLevels:[0,0,0,0,0],
-  convoHistoryVisible:false,
   convoHistoryOpen:false,
   convoHistory:[],
   transcripts:[],
   thread_menu_left:60,
   entries_loaded:false,
-  mic_location:"convo"
+  topNavHidden:false,
+  microphoneOn:false,
+  mainMenuVisible:false
 };
 
 
@@ -151,8 +153,8 @@ class App extends Component {
       login_visible:false,
       face_logged_in:false,
       fire_logged_in:false,
-      active_thread:"everything",
-      threads:{"everything":{id:"everything",name:"Loading...",color:"#FF7878",brightness:150,entries:{}}},
+      active_thread:"user",
+      threads:{"user":{id:"user",name:"Loading...",color:"#FF7878",brightness:150},"everything":{id:"everything",name:"Everything",color:"#FF7878",brightness:150,entries:{}}},
       loaded_threads:{},
       entries:{},
       active_entry:false,
@@ -167,7 +169,8 @@ class App extends Component {
       thread_menu_left:60,
       entries_loaded:false,
       topNavHidden:false,
-      microphoneOn:false
+      microphoneOn:false,
+      mainMenuVisible:false
     };
   }
 
@@ -224,46 +227,6 @@ class App extends Component {
     var currentMood = 'neutral';
 
 
-    /*
-    console.log('loading EM...');
-    var emBody;
-  	//var s = Snap("#em-container");
-  	//var sr = Snap("#em-radar-container");
-
-  	emBody = s.circle(200, 200, 20);
-
-  	emBody.attr({
-  			id:"emBody"
-  	});
-
-  	var emHighlight = s.circle(210, 190, 2);
-
-  	emHighlight.attr({
-  			fill: "#ffffff"
-  	});
-
-  	var em = s.group(emBody, emHighlight);
-
-
-  	var emRadar = s.circle(200, 200, 1);
-
-  	var emRadarClass = "emRadar";
-  	if(currentMood == "sad"){
-  		emRadarClass += " sad";
-  	}
-
-  	emRadar.attr({
-  			fill: "#FF9E9E",
-  			opacity:.1,
-  			id:"radar"+0
-  	});
-
-  	var emRadarObj = {width:0,height:0,opacity:.2};
-
-  	emHighlight.transform("t-7,-3");
-    */
-
-
   	window.pageHeight = $(window).height() - 130;
   	window.pageWidth = .3*$(window).width()+30;
 
@@ -302,9 +265,9 @@ class App extends Component {
   			radarObj.animate({ transform: "s"+1000+" "+1000, opacity:0}, 10000 );
 
   	}*/
-  	window.radarBlink = setInterval(window.radarBlinker, radarSpeed);
-
-  	  var emMovement = setInterval(function(){
+  	//window.radarBlink = setInterval(window.radarBlinker, radarSpeed);
+      clearInterval(window.emMovement);
+  	  window.emMovement = setInterval(function(){
 
       var em=$('#em_container');
   		var rChange = Math.random()*.2-.1;
@@ -332,9 +295,7 @@ class App extends Component {
   			rInertia = minVal;
   		}
 
-  		//em.animate({ transform: "t"+xPos+" "+yPos}, 200 );
       //console.log(xPos+', '+yPos);
-      //em.css({ left:xPos+200,top:yPos+200});
       em.css("transform","translate3d("+(xPos+200)+"px, "+(yPos+200)+"px, 0px)");
   	},200);
 
@@ -362,13 +323,6 @@ class App extends Component {
   }
 
   componentDidUpdate(){
-    /*var renamingThread=(this.state.renaming_thread_id ? true : false);
-    if(renamingThread){
-      $('.threadTitle[data-thread-id="'+this.state.renaming_thread_id+'"]').focus();
-      this.setState({
-        thread_menu_open:false
-      });
-    }*/
 
   }
 
@@ -377,10 +331,10 @@ class App extends Component {
 /***************** USER PAGE EVENTS ******************/
 
 userReturnedToPage(){
-  if(this.state.microphoneOn){
+  /*if(this.state.microphoneOn){
     this.state.recognition.stop();
     this.state.recognition.start();
-  }
+  }*/
 }
 
 userLeftPage(){
@@ -459,6 +413,15 @@ userLeftPage(){
   }
 
   getFirebaseUserData(fid){
+    //setup user main thread
+    var threads = this.state.threads;
+    var everything_thread = threads["everything"];
+    var user_everything_thread_id = fid+"-everything";
+    threads[user_everything_thread_id] = everything_thread;
+    threads[user_everything_thread_id].id=user_everything_thread_id;
+    delete threads["everything"];
+    this.setState({threads:threads});
+
     var user_REF=rootRef.child('users').child(fid);
     user_REF.once('value', snap => {
       var user=snap.val();
@@ -474,21 +437,33 @@ userLeftPage(){
         this.createFirebaseUserCookie(fid);
         this.userDataUpdated=true;
         var threads=this.state.threads;
-        threads["everything"].name=user.name.split(" ")[0];
+        threads["user"].name=user.name.split(" ")[0];
+        threads[user_everything_thread_id].name="Everything";
         this.setState({
           fid:fid,
           fire_logged_in:true,
           user:user,
-          threads:threads
-        }, this.launchEMBubble.bind(this));
-        this.getFirebaseThreadData(fid);
+          threads:threads,
+          user_everything_thread_id:user_everything_thread_id
+        }, function(){
+          var threads_REF=rootRef.child('threads');
+          var threadReferences=this.state.user.threads;
+          var user_everything_thread_id=fid+"-everything";
+          if(!threadReferences[user_everything_thread_id]){
+            this.createUserThread(fid);
+          }else{
+            this.getFirebaseThreadData(fid);
+          }
+          this.launchEMBubble();
+        });
       }
     });
   }
 
   getFirebaseThreadData(fid){
-    var threads_REF=rootRef.child('threads')
+    var threads_REF=rootRef.child('threads');
     var threadReferences=this.state.user.threads;
+    console.log(threadReferences);
     for (var key in threadReferences) {
       // skip loop if the property is from prototype
       if (!threadReferences.hasOwnProperty(key)) continue;
@@ -503,6 +478,7 @@ userLeftPage(){
       this_thread_REF.once('value', snap => {
         i++;
         var thread=snap.val();
+        console.log(thread);
         if( thread === null ) {
           //set up the new user profile
           console.log('Thread not found in Firebase>Threads –– Issue!');
@@ -512,10 +488,20 @@ userLeftPage(){
         if(i == Object.keys(threadReferences).length){
           this.setState({
             threads:threads
+          }, function(){
+            this.getFirebaseEntryData();
           });
         }
       });
     }
+  }
+
+  createUserThread(fid){
+    var user_everything_thread_id=fid+"-everything";
+    var user_REF=rootRef.child('users').child(fid);
+    user_REF.child('threads').child(user_everything_thread_id).set({id:user_everything_thread_id},this.getFirebaseThreadData(fid));
+    var threads_REF=rootRef.child('threads');
+    threads_REF.child(user_everything_thread_id).set(this.state.threads[user_everything_thread_id]);
   }
 
   /*checkForThreadCookie(){
@@ -533,9 +519,12 @@ userLeftPage(){
   }*/
 
   getFirebaseEntryData(){
-    console.log('getting firebase entry data');
-    var entries_REF=rootRef.child('entries')
+    console.log('getting firebase entry data for: '+this.state.active_thread);
+    console.log(this.state.threads);
+    var entries_REF=rootRef.child('entries');
     var entryReferences=this.state.threads[this.state.active_thread].entries;
+    console.log(this.state.threads[this.state.active_thread]);
+    console.log(entryReferences);
     var entries=this.state.entries;
     var i=0;
     if(!this.state.loaded_threads[this.state.active_thread]){
@@ -630,6 +619,16 @@ userLeftPage(){
   }
 
   setupNewUserData(newId, name){
+    //setup user main thread
+    var fid = newId;
+    var threads = this.state.threads;
+    var everything_thread = threads["everything"];
+    var user_everything_thread_id = fid+"-everything";
+    threads[user_everything_thread_id] = everything_thread;
+    threads[user_everything_thread_id].id=user_everything_thread_id;
+    delete threads["everything"];
+    this.setState({active_thread:user_everything_thread_id,threads:threads});
+
     console.log('setting up new user data:');
     var user_REF=rootRef.child('users');
     var new_user_data={
@@ -639,6 +638,7 @@ userLeftPage(){
       photo_url:this.state.fb_user.photoURL
     };
     new_user_data.threads={};
+    new_user_data.threads[user_everything_thread_id]=this.state.threads[user_everything_thread_id];
     new_user_data.sign_up_date=Date.now();
     new_user_data.last_login=Date.now();
     new_user_data.fid=newId;
@@ -648,17 +648,18 @@ userLeftPage(){
     this.createFirebaseUserCookie(newId);
     this.userDataUpdated=true;
     var threads=this.state.threads;
-    threads["everything"].name=name.split(" ")[0];
+    threads["user"].name=name.split(" ")[0];
+    threads[user_everything_thread_id].name="Everything";
     this.setState({
       user:new_user_data,
       fid:newId,
       fire_logged_in:true,
-      threads:threads
+      threads:threads,
+      user_everything_thread_id:user_everything_thread_id
     });
   }
 
   //updating firebase user object when state{user} object is changed.
-
   firebaseUserUpdateObject(){
     if(this.state.fire_logged_in && this.userDataUpdated){
       console.log('updating user object');
@@ -775,12 +776,15 @@ userLeftPage(){
     var fid=this.state.fid;
     var newEntryObject={
       fid:fid,
-      thread_id:thread_id,
       title:false,
       created_date:Date.now(),
       updated_date:Date.now(),
       text:false
     };
+    if(thread_id!='everything'){
+      newEntryObject.threads={};
+      newEntryObject.threads[thread_id]=thread_id;
+    }
     var newEntryId=entries_REF.push(newEntryObject).getKey();
     entries_REF.child(newEntryId).update({
       id:newEntryId
@@ -820,6 +824,43 @@ userLeftPage(){
     }.bind(this));
   }
 
+  addFirebaseEntryThreadRef(entry_id, thread_id){
+
+    //create new entry reference in 'threads'
+    var thread_id;
+    var threads_REF=rootRef.child('threads');
+    var fid=this.state.fid;
+    var newEntryReference={
+      id:entry_id,
+      thread_id:thread_id,
+      fid:fid
+    };
+    threads_REF.child(thread_id).child('entries').child(entry_id).set(newEntryReference);
+
+    //create new entry reference in local 'threads'
+    var threads=this.state.threads;
+    var thread=threads[thread_id];
+    if(!thread.entries){
+      thread.entries={};
+    }
+    threads[thread_id].entries[entry_id]=newEntryReference;
+
+    this.setState({threads:threads});
+  }
+
+  deleteFirebaseEntryThreadRef(entry_id, thread_id){
+    var threads_REF=rootRef.child('threads');
+    threads_REF.child(thread_id).child('entries').child(entry_id).set(null);
+
+    var threads=this.state.threads;
+    var thread=threads[thread_id];
+    if(thread.entries){
+      delete threads[thread_id].entries[entry_id];
+    }
+    this.setState({threads:threads});
+
+  }
+
   updateFirebaseEntry(entry_id){
     console.log('updating firebase entry');
 
@@ -830,6 +871,18 @@ userLeftPage(){
     console.log(entryObject);
     entries_REF.child(entry_id).set(entryObject);
     this.closeEntry();
+
+    var entryThreadRefs = this.state.entries[entry_id].threads;
+    entryThreadRefs[this.state.user_everything_thread_id]=this.state.user_everything_thread_id;
+    if(entryThreadRefs){
+      var threadsKeys = Object.keys(entryThreadRefs);
+      console.log('threads length:'+threadsKeys.length);
+
+      for(var i = 0; i<threadsKeys.length;i++){
+        var thread_id=threadsKeys[i];
+        this.addFirebaseEntryThreadRef(entry_id, thread_id);
+      }
+    }
   }
 
   deleteFirebaseEntry(entry_id){
@@ -840,6 +893,14 @@ userLeftPage(){
     var fid=this.state.fid;
     entries_REF.child(entry_id).set(null);
 
+    var threadsKeys = Object.keys(this.state.threads);
+
+    for(var i = 0; i<threadsKeys.length;i++){
+      var thread_id=threadsKeys[i];
+      this.deleteFirebaseEntryThreadRef(entry_id, thread_id);
+    }
+
+    /*
     //create new entry reference in 'threads'
     var threads_REF=rootRef.child('threads');
     var thread_id=this.state.entries[entry_id].thread_id;
@@ -848,14 +909,13 @@ userLeftPage(){
     //create new entry reference in local 'threads'
     var threads=this.state.threads;
     var thread=threads[thread_id];
-    delete threads[thread_id].entries[entry_id];
+    delete threads[thread_id].entries[entry_id];*/
 
     //create new entry item in local 'entries'
     var entries=this.state.entries;
     delete entries[entry_id];
 
     this.setState({
-      threads:threads,
       entries:entries,
       active_entry:false
     });
@@ -1001,6 +1061,7 @@ userLeftPage(){
   }
 
   toggleMic(mic_setting){
+    console.log(mic_setting);
     this.setState({microphoneOn:mic_setting});
   }
 
@@ -1156,11 +1217,13 @@ userLeftPage(){
 
   renderThreadMenu(){
     var menuVisible=(this.state.thread_menu_open?true:false);
+    var deleteVisible=(this.state.active_thread==this.state.user_everything_thread_id?false:true);
+    var renameVisible=(this.state.active_thread==this.state.user_everything_thread_id?false:true);
       return(
         <div id="threadMenuWrap" data-visible={menuVisible}>
           <div onClick={this.clickThreadMenu.bind(this)} style={{left:this.state.thread_menu_left}} id="threadMenu">
-            <div onClick={this.clickDeleteThreadMenu.bind(this)} id="deleteThread">Delete</div>
-            <div onClick={this.clickRenameThreadMenu.bind(this)} id="renameThread">Rename</div>
+            <div data-visible={deleteVisible} onClick={this.clickDeleteThreadMenu.bind(this)} id="deleteThread">Delete</div>
+            <div data-visible={renameVisible} onClick={this.clickRenameThreadMenu.bind(this)} id="renameThread">Rename</div>
             <div onClick={this.beginRecolorThread.bind(this)} id="colorThread">Colors</div>
           </div>
         </div>
@@ -1181,9 +1244,10 @@ userLeftPage(){
     var threadActive=(this.state.active_thread == thread.id ? true : false);
     var renamingThread=(this.state.renaming_thread_id == thread.id ? true : false);
     var thread_menu_visible=true;
-    if(this.state.active_thread == "everything"){
+    if(this.state.active_thread=="user"){
       thread_menu_visible=false;
     }
+
     return (
       <div data-menu-visible={thread_menu_visible} onClick={this.clickThread.bind(this)} data-menu-open={this.state.thread_menu_open} data-active={threadActive} data-thread-id={thread.id} key={thread.id} className="thread">
         <div onClick={this.toggleThreadMenu.bind(this)} className="menu">
@@ -1341,6 +1405,10 @@ userLeftPage(){
     });
   }
 
+  toggleMainMenu(){
+    this.setState({mainMenuVisible:!this.state.mainMenuVisible});
+  }
+
 
   renderThreadPage(new_color){
     if(this.state.active_thread && this.state.fire_logged_in){
@@ -1376,6 +1444,9 @@ userLeftPage(){
       console.log(Object.keys(this.state.entries).length);*/
 
       return(<Thread
+        user_everything_thread_id={this.state.user_everything_thread_id}
+        mainMenuVisible={this.state.mainMenuVisible}
+        toggleMainMenu={this.toggleMainMenu.bind(this)}
         mic_location={this.state.mic_location}
         setMicFocus={this.setMicFocus.bind(this)}
         showTopNav={this.showTopNav.bind(this)}
@@ -1405,6 +1476,9 @@ userLeftPage(){
   newEntry(type){
     console.log('starting new entry');
     var thread_id=this.state.active_thread;
+    if(thread_id=='user'){
+      thread_id=this.state.user_everything_thread_id;
+    }
     this.createNewFirebaseEntry(type,thread_id);
   }
 
@@ -1474,7 +1548,11 @@ userLeftPage(){
     if(this.state.thread_menu_open){
       this.setState({
         thread_menu_open:false
-      })
+      });
+    }else if(this.state.mainMenuVisible){
+      this.setState({
+        mainMenuVisible:false
+      });
     }
   }
 
@@ -1495,7 +1573,7 @@ userLeftPage(){
     var bgImageToLoad='url("http://cdn.mysitemyway.com/etc-mysitemyway/webtreats/assets/posts/857/full/tileable-classic-nebula-space-patterns-6.jpg")';
     clearTimeout(window.fadeBgIn);
     var new_color=activeThreadColor;
-    if(this.state.active_thread=='everything'){
+    if(this.state.active_thread=="user"){
       activeThreadColor='transparent';
       new_color="#ffffff";
       /*if(window.prevBackground){

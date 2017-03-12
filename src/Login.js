@@ -27,8 +27,10 @@ class Login extends Component {
 
   render() {
     return (
-      <div id="login" onClick={this.props.facebookSignin}>
-        Login
+      <div>
+        <div id="login" onClick={this.props.facebookSignin}>
+          Login
+        </div>
       </div>
     );
   }
