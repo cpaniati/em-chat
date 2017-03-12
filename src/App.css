@@ -65,6 +65,28 @@ body::after{
   fill:#fff;
 }
 
+#emResponses:empty{
+  opacity:0;
+}
+
+#emResponses{
+  position:absolute;
+  opacity:1;
+  transition:transform .3s linear, opacity .4s;
+}
+
+#emResponses .bubble{
+  padding:10px;
+  border-radius:20px;
+  background:white;
+  margin-bottom:10px;
+  max-width:200px;
+  transition:opacity .4s;
+  float:left;
+  clear:both;
+}
+
+
 .App[data-ui-color="dark"] #em_body{
   fill:#444;
 }

@@ -219,10 +219,9 @@ class Thread extends Component {
       gradientVisible = false;
       dashboard_disclaimer = true;
     }
-
+    //<div id="dashboard_disclaimer" data-visible={dashboard_disclaimer}>Dashboard Coming Soon!</div>
     return (
       <div id="threadPage">
-        <div id="dashboard_disclaimer" data-visible={dashboard_disclaimer}>Dashboard Coming Soon!</div>
         {this.renderEntryNav()}
         {this.renderEntries()}
         <div id="newEntryWrap">{this.renderNewEntry()}</div>

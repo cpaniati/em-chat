@@ -211,12 +211,35 @@ class App extends Component {
     }
   }
 
+  renderEmSpeechBubble(){
+    if(this.state.fire_logged_in){
+      return(
+        <div id="emResponses">
+        </div>);
+    }
+  }
+
+  setEmBounds(position){
+    if(position == "left"){
+      window.emBoxTop=-30;
+      window.emBoxBottom=window.pageHeight-200;
+      window.emBoxLeft=-30;
+      window.emBoxRight=window.pageWidth/2;
+    }else if(position == "center"){
+      window.emBoxTop=-30;
+      window.emBoxBottom=window.pageHeight-200;
+      window.emBoxLeft=window.pageWidth/4;
+      window.emBoxRight=window.pageWidth-window.pageWidth/4;
+    }
+  }
+
   launchEMBubble(){
 
     //****************** EM BUBBLE *********************//
 
     window.em_radar_speed = 2000;
     window.em_speed = 5;
+    window.em_gravity = window.em_speed*.02;
     window.em_xPos = 0;
     window.em_yPos = 0;
 
@@ -227,12 +250,12 @@ class App extends Component {
     var currentMood = 'neutral';
 
 
-  	window.pageHeight = $(window).height() - 130;
-  	window.pageWidth = .3*$(window).width()+30;
+  	window.pageHeight = $(window).height();
+  	window.pageWidth = $(window).width();
 
   	$(window).resize(function(){
-  		window.pageHeight = $(window).height() - 130;
-  		window.pageWidth = .3*$(window).width()+30;
+  		window.pageHeight = $(window).height();
+  		window.pageWidth = $(window).width();
   	});
 
   	//em.transform("t"+pageWidth/3+","+pageHeight/3);
@@ -244,6 +267,15 @@ class App extends Component {
   	var rInertia = 0;
   	var radars = [];
   	var radarsData = [];
+
+    window.emBoxTop=-30;
+    //window.emBoxBottom=30;
+    window.emBoxBottom=window.pageHeight-200;
+    window.emBoxLeft=-30;
+    //window.emBoxRight=300;
+    window.emBoxRight=window.pageWidth/2;
+    console.log(window.emBoxRight);
+
 
     /*
   	var counter = 0;
@@ -274,15 +306,24 @@ class App extends Component {
   		rInertia += rChange;
   		direction += rInertia;
   		//console.log('r:'+rInertia+' d:'+direction+' x:'+xPos+' y:'+yPos);
-  		if(xPos < -30){
-  			xPos += (xPos+30)*-.1;
-  		}else if (xPos > 30){
-  			xPos -= (xPos-30)*.1;
+
+      var top = window.emBoxTop;
+      var bottom = window.emBoxBottom;
+      var left = window.emBoxLeft;
+      var right = window.emBoxRight;
+      var gravity = window.em_gravity;
+
+      //console.log(xPos);
+  		if(xPos < left){
+  			xPos += (xPos-left)*-gravity;
+  		}else if (xPos > right){
+  			xPos -= (xPos-right)*gravity;
   		}
-  		if(yPos < -30){
-  			yPos += (yPos+30)*-.1;
-  		}else if (yPos > 300){
-  			yPos -= (yPos - 300)*.1;
+      //console.log(yPos);
+  		if(yPos < top){
+  			yPos += (yPos-top)*-gravity;
+  		}else if (yPos > bottom){
+  			yPos -= (yPos - bottom)*gravity;
   		}
   		xPos += Math.sin(direction)*emSpeed;
   		yPos += Math.cos(direction)*emSpeed;
@@ -297,6 +338,7 @@ class App extends Component {
 
       //console.log(xPos+', '+yPos);
       em.css("transform","translate3d("+(xPos+200)+"px, "+(yPos+200)+"px, 0px)");
+      $('#emResponses').css("transform","translate3d("+(xPos+240)+"px, "+(yPos+240)+"px, 0px)");
   	},200);
 
 
@@ -709,6 +751,7 @@ userLeftPage(){
       active_thread:newThreadId
     },function(){
       this.beginRenameThread(newThreadId);
+      this.setEmBounds("left");
     }.bind(this));
   }
 
@@ -727,9 +770,9 @@ userLeftPage(){
     this.setState({
       threads:threads,
       user:user,
-      active_thread:"everything",
+      active_thread:"user",
       thread_menu_open:false
-    });
+    },this.setEmBounds("left").bind(this));
   }
 
   renameFirebaseThread(thread_id, name){
@@ -978,12 +1021,40 @@ userLeftPage(){
   				data: JSON.stringify({ query: text, lang: "en", sessionId: "somerandomthing" }),
   				success: function(data) {
             console.log(data);
+            var extraTime = 0;
+            if(data.result.fulfillment.speech.length > 70){
+              extraTime=2000;
+            }
+            if($('.bubble').length > 3){
+              $('.bubble:first-child').css('opacity','0');
+              setTimeout(function(){
+                $('.bubble:first-child').remove();
+              },400);
+            }
+
             var convoHistory=this.state.convoHistory;
             convoHistory.push({id:convoHistory.length,text:data.result.fulfillment.speech,type:'bot',created_date:Date.now()});
             this.setState({convoHistory:convoHistory}, function(){
               console.log($("#convoHistory")[0].clientHeight - $("#convoHistory")[0].scrollHeight);
               $("#convoHistory").animate({ scrollTop: $("#convoHistory")[0].scrollHeight - $("#convoHistory")[0].clientHeight });
             });
+            //add the new bubble
+            $('#emResponses').append("<div class='bubble' style='opacity:0;'>"+data.result.fulfillment.speech+"</div>");
+            setTimeout(function(){
+              $('.bubble').css('opacity',1);
+            },100);
+            //em bubble speech
+            clearTimeout(window.convoBubble);
+            window.convoBubble=setTimeout(function(){
+              //hide speech
+              $('.bubble').css('opacity',0);
+              clearTimeout(window.clearBubbles);
+              window.clearBubbles = setTimeout(function(){
+                $('#emResponses').empty();
+              },400);
+            },4000+extraTime);
+
+
             //console.log(JSON.stringify(data, undefined, 2));
   				}.bind(this),
   				error: function() {
@@ -1280,12 +1351,13 @@ userLeftPage(){
     this.showTopNav();
     if(e.currentTarget.getAttribute('data-active') == 'true'){
       this.setState({
-        active_thread:"everything",
+        active_thread:"user",
         thread_menu_open:false,
         recoloring_thread_id:false,
         entries_loaded:false
       },function(){
         this.getFirebaseEntryData();
+        this.setEmBounds("center");
       });
     }else{
       var thread_id=e.currentTarget.getAttribute('data-thread-id');
@@ -1296,6 +1368,7 @@ userLeftPage(){
       },function(){
         this.getFirebaseEntryData();
         this.setThreadCookie(thread_id);
+        this.setEmBounds("left");
       });
     }
   }
@@ -1619,6 +1692,7 @@ userLeftPage(){
         {this.renderLogo()}
         <div className="AppInner" style={{background:activeThreadColor}}>
           {this.renderEmContainer()}
+          {this.renderEmSpeechBubble()}
           {this.renderColorPicker()}
           {this.renderMicrophone()}
           {this.renderConvoHistory()}
