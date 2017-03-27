@@ -268,6 +268,7 @@ class Microphone extends Component {
   toggleMicAnimation(setting){
     if(setting){
       console.log('microphone is on');
+      clearInterval(window.micAnim);
       window.micAnim=setInterval(function(){
         var micAnimationLevels=this.state.micAnimationLevels;
         for(var i=4; i > 0; i--){
@@ -328,6 +329,15 @@ class Microphone extends Component {
     /*this.setState({
       microphoneOn:!this.state.microphoneOn
     }, this.toggleMicAnimation.bind(this));*/
+  }
+
+  //used by parent through ref
+  startRecognition(){
+    this.state.recognition.start();
+  }
+
+  stopRecognition(){
+    this.state.recognition.stop();
   }
 
   render() {

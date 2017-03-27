@@ -182,6 +182,8 @@ class App extends Component {
     window.onfocus=this.userReturnedToPage.bind(this);
     window.onblur=this.userLeftPage.bind(this);
 
+    document.addEventListener("keydown", this.pageKeyDown.bind(this));
+    document.addEventListener("keyup", this.pageKeyUp.bind(this));
   }
 
   componentWillUpdate(){
@@ -198,6 +200,11 @@ class App extends Component {
       threads_nav_visible:true
     });
 
+  }
+
+  componentWillUnmount(){
+    document.removeEventListener("keydown", this.pageKeyDown.bind(this));
+    document.removeEventListener("keyup", this.pageKeyUp.bind(this));
   }
 
   renderEmContainer(){
@@ -222,14 +229,19 @@ class App extends Component {
   setEmBounds(position){
     if(position == "left"){
       window.emBoxTop=-30;
-      window.emBoxBottom=window.pageHeight-200;
+      window.emBoxBottom=window.pageHeight-400;
       window.emBoxLeft=-30;
-      window.emBoxRight=window.pageWidth/2;
+      window.emBoxRight=window.pageWidth/2-200;
     }else if(position == "center"){
       window.emBoxTop=-30;
-      window.emBoxBottom=window.pageHeight-200;
+      window.emBoxBottom=window.pageHeight-400;
       window.emBoxLeft=window.pageWidth/4;
       window.emBoxRight=window.pageWidth-window.pageWidth/4;
+    }else if(position == "farLeft"){
+      window.emBoxTop=-30;
+      window.emBoxBottom=30;
+      window.emBoxLeft=-30;
+      window.emBoxRight=300;
     }
   }
 
@@ -256,7 +268,10 @@ class App extends Component {
   	$(window).resize(function(){
   		window.pageHeight = $(window).height();
   		window.pageWidth = $(window).width();
-  	});
+      if(window.pageWidth < 901){
+        this.setEMBoundes("farLeft");
+      }
+  	}.bind(this));
 
   	//em.transform("t"+pageWidth/3+","+pageHeight/3);
 
@@ -270,10 +285,10 @@ class App extends Component {
 
     window.emBoxTop=-30;
     //window.emBoxBottom=30;
-    window.emBoxBottom=window.pageHeight-200;
+    window.emBoxBottom=window.pageHeight-400;
     window.emBoxLeft=-30;
     //window.emBoxRight=300;
-    window.emBoxRight=window.pageWidth/2;
+    window.emBoxRight=window.pageWidth/2-200;
     console.log(window.emBoxRight);
 
 
@@ -713,7 +728,15 @@ userLeftPage(){
     }
   }
 
-  createNewFirebaseThread(){
+  createNewFirebaseThread(name){
+    //check for active entry, if so finish & close entry
+    if(this.state.active_entry){
+      this.finishEntry(this.state.active_entry);
+    }
+
+    if(!name){
+      name = "New Thread";
+    }
     console.log('creating new firebase thread:');
 
     //create new item in threads
@@ -721,7 +744,7 @@ userLeftPage(){
     var fid=this.state.fid;
     var newThreadObject={
       fid:fid,
-      name:"New Thread",
+      name:name,
       color:"#bbb",
       brightness:200,
       entries:{}
@@ -772,7 +795,7 @@ userLeftPage(){
       user:user,
       active_thread:"user",
       thread_menu_open:false
-    },this.setEmBounds("left").bind(this));
+    });
   }
 
   renameFirebaseThread(thread_id, name){
@@ -970,7 +993,8 @@ userLeftPage(){
 
   pass_final_transcript(final_transcript,overwrite){
       var convoHistory=this.state.convoHistory;
-      if(this.state.mic_location=='entry' && this.state.active_entry){
+      console.log(this.state.mic_location);
+      if(this.state.mic_location=='entry' && this.state.active_entry && window.emIsWaitingForTranscript!=true){
         //store as entry
         var entries=this.state.entries;
         var entry=entries[this.state.active_entry];
@@ -996,9 +1020,11 @@ userLeftPage(){
         });
       }else{
         //store as convo
+        window.emIsWaitingForTranscript=false;
         if(overwrite){
-          convoHistory[convoHistory.length-1].text=final_transcript;
+          convoHistory[window.lastUserConvoItem].text=final_transcript;
         }else{
+          window.lastUserConvoItem=convoHistory.length;
           convoHistory.push({id:convoHistory.length,text:final_transcript,type:'user',created_date:Date.now()});
         }
         this.setState({
@@ -1006,6 +1032,31 @@ userLeftPage(){
         });
         this.send_Api_Ai(final_transcript);
       }
+  }
+
+  pageKeyDown(e){
+    //var code=(e.keyCode ? e.keyCode : e.which);
+    console.log('hit');
+    if(e.metaKey) { //Enter keycode
+      this.refs.microphone.toggleMicAnimation(true);
+      window.prevMicState=this.state.microphoneOn;
+      window.prevMicLocation=this.state.mic_location;
+      window.emIsWaitingForTranscript=true;
+      if(!this.state.microphoneOn){
+        this.refs.microphone.startRecognition();
+      }
+      this.setState({mic_location:"convo",emButtonIsPressed:true,microphoneOn:true});
+    }
+  }
+
+  pageKeyUp(e){
+    if(this.state.emButtonIsPressed){
+      this.refs.microphone.toggleMicAnimation(window.prevMicState);
+      this.setState({mic_location:window.prevMicLocation,emButtonIsPressed:false,microphoneOn:window.prevMicState});
+      if(window.prevMicState == false){
+        this.refs.microphone.stopRecognition();
+      }
+    }
   }
 
 
@@ -1021,39 +1072,13 @@ userLeftPage(){
   				data: JSON.stringify({ query: text, lang: "en", sessionId: "somerandomthing" }),
   				success: function(data) {
             console.log(data);
-            var extraTime = 0;
-            if(data.result.fulfillment.speech.length > 70){
-              extraTime=2000;
+            var action = data.result.action;
+            var parameters = data.result.parameters;
+            if(action){
+              this.checkActions(action, parameters);
             }
-            if($('.bubble').length > 3){
-              $('.bubble:first-child').css('opacity','0');
-              setTimeout(function(){
-                $('.bubble:first-child').remove();
-              },400);
-            }
-
-            var convoHistory=this.state.convoHistory;
-            convoHistory.push({id:convoHistory.length,text:data.result.fulfillment.speech,type:'bot',created_date:Date.now()});
-            this.setState({convoHistory:convoHistory}, function(){
-              console.log($("#convoHistory")[0].clientHeight - $("#convoHistory")[0].scrollHeight);
-              $("#convoHistory").animate({ scrollTop: $("#convoHistory")[0].scrollHeight - $("#convoHistory")[0].clientHeight });
-            });
-            //add the new bubble
-            $('#emResponses').append("<div class='bubble' style='opacity:0;'>"+data.result.fulfillment.speech+"</div>");
-            setTimeout(function(){
-              $('.bubble').css('opacity',1);
-            },100);
-            //em bubble speech
-            clearTimeout(window.convoBubble);
-            window.convoBubble=setTimeout(function(){
-              //hide speech
-              $('.bubble').css('opacity',0);
-              clearTimeout(window.clearBubbles);
-              window.clearBubbles = setTimeout(function(){
-                $('#emResponses').empty();
-              },400);
-            },4000+extraTime);
-
+            var text = data.result.fulfillment.speech;
+            this.em_speak(text);
 
             //console.log(JSON.stringify(data, undefined, 2));
   				}.bind(this),
@@ -1064,9 +1089,60 @@ userLeftPage(){
   		}
 
       setMicFocus(location){
+        console.log('setting mic location to: '+location);
         this.setState({mic_location:location});
       }
 
+  em_speak(text, delay){
+    if(!delay){
+      delay = 0;
+    }
+    setTimeout(function(){
+      var extraTime = 0;
+      if(text.length > 70){
+        extraTime=2000;
+      }
+      if($('.bubble').length > 3){
+        $('.bubble:first-child').css('opacity','0');
+          setTimeout(function(){
+            if($('.bubble').length > 3){
+              $('.bubble:first-child').remove();
+            }
+          },400);
+      }
+      var convoHistory=this.state.convoHistory;
+      convoHistory.push({id:convoHistory.length,text:text,type:'bot',created_date:Date.now()});
+      this.setState({convoHistory:convoHistory}, function(){
+        console.log($("#convoHistory")[0].clientHeight - $("#convoHistory")[0].scrollHeight);
+        $("#convoHistory").animate({ scrollTop: $("#convoHistory")[0].scrollHeight - $("#convoHistory")[0].clientHeight });
+      });
+      //add the new bubble
+      $('#emResponses').append("<div class='bubble' style='opacity:0;'>"+text+"</div>");
+      setTimeout(function(){
+        $('.bubble').css('opacity',1);
+      },100);
+      //em bubble speech
+      clearTimeout(window.convoBubble);
+      window.convoBubble=setTimeout(function(){
+        //hide speech
+        $('.bubble').css('opacity',0);
+        clearTimeout(window.clearBubbles);
+        window.clearBubbles = setTimeout(function(){
+          $('#emResponses').empty();
+        },400);
+      },4000+extraTime);
+    }.bind(this),delay);
+  }
+
+  checkActions(action, parameters){
+    if(action == 'create-new-thread'){
+      if(parameters["thread-name"]){
+        this.createNewFirebaseThread(parameters["thread-name"]);
+      }else{
+        this.createNewFirebaseThread();
+      }
+    }
+  }
 
 
 /***************** PAGE CONTROLS ******************/
@@ -1075,7 +1151,15 @@ userLeftPage(){
     this.setState({
       convoHistoryOpen:!this.state.convoHistoryOpen
     },function(){
-      $('#convoInput').focus();
+      if(this.state.convoHistoryOpen){
+        $('#convoInput').focus();
+        /*if($(window).width() < 650){
+          //$("body").animate({ scrollTop: $("body").scrollHeight - $("body").clientHeight });
+          //$("html").scrollTop(1000);
+
+        }*/
+        $("body").scrollTop(1000);
+      }
     });
   }
 
@@ -1123,6 +1207,7 @@ userLeftPage(){
     if(this.state.microphoneVisible && this.state.fire_logged_in){
       return(
         <Microphone
+          ref="microphone"
           toggleMic={this.toggleMic.bind(this)}
           microphoneOn={this.state.microphoneOn}
           pass_final_transcript={this.pass_final_transcript.bind(this)}
@@ -1195,7 +1280,7 @@ userLeftPage(){
         convoStyle="entry";
         entryVisible=true;
       }
-      var show_mic = (this.state.mic_location=="convo" && this.state.mic_location=="convo"?true:false);
+      var show_mic = (this.state.mic_location=="convo"?true:false);
       return(
         <div id="convoHistoryContainer" data-style={convoStyle} data-open={this.state.convoHistoryOpen}>
           {this.renderConvoHistoryInner()}
@@ -1267,7 +1352,11 @@ userLeftPage(){
     });
   }
 
-
+  clickNewThreadButton(){
+    this.em_speak("I'm happy to create a new thread for you as well!",500);
+    this.em_speak("You can say: Create a new thread named ______.",1500);
+    this.createNewFirebaseThread();
+  }
 
   renderThreadsNav(){
     if(this.state.threads_nav_visible && this.state.fire_logged_in){
@@ -1276,7 +1365,7 @@ userLeftPage(){
           {this.renderThreadMenu()}
           {this.renderThreads()}
           <div id="threadsCover"></div>
-          <div onClick={this.createNewFirebaseThread.bind(this)} id="addThread">+</div>
+          <div onClick={this.clickNewThreadButton.bind(this)} id="addThread">+</div>
         </div>
       );
     }
@@ -1357,7 +1446,7 @@ userLeftPage(){
         entries_loaded:false
       },function(){
         this.getFirebaseEntryData();
-        this.setEmBounds("center");
+        //this.setEmBounds("center");
       });
     }else{
       var thread_id=e.currentTarget.getAttribute('data-thread-id');

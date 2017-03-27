@@ -976,10 +976,13 @@ body::after{
 #mainMenuWrap{
   position:fixed;
   z-index:100;
+  width:100%;
+  right:0px;
+  transition:right .2s;
 }
 
 #mainMenuButton{
-  position:fixed;
+  position:absolute;
   top:30px;
   right:30px;
   width:50px;
@@ -1003,7 +1006,7 @@ body::after{
 }
 
 #addEntry{
-  position:fixed;
+  position:absolute;
   top:30px;
   right:30px;
   width:25px;
@@ -1027,7 +1030,7 @@ body::after{
 
 #finishEntry{
   z-index:10;
-  position:fixed;
+  position:absolute;
   top:30px;
   right:30px;
   padding-left:10px;
@@ -1492,11 +1495,16 @@ body::after{
     left:-80px!important;
   }
 
-  .App[data-top-nav-hidden="true"] #addEntry, .App[data-top-nav-hidden="true"] #finishEntry, .App[data-top-nav-hidden="true"] #logout{
-    right:-50px!important;
+  .App[data-top-nav-hidden="true"] #mainMenuWrap{
+    right:-160px!important;
   }
 
-  #addEntry, #finishEntry, #logout, #logo{
+  .App[data-top-nav-hidden="true"] #addEntry{
+    right:-100px!important;
+  }
+
+
+  #addEntry, #finishEntry, #logo{
     position:absolute;
   }
 
