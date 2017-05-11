@@ -1,7 +1,19 @@
 import React, { PropTypes, Component } from 'react';
 import cookie from 'react-cookie';
 import logo_light from './logo_light_shadow.svg';
+import em_bounce from './em-bounce.gif';
 import logo_dark from './logo_dark.svg';
+import em_audio1 from './em_audio1.mp3';
+import em_tone1 from './em_tone2.1.mp3';
+import em_tone2 from './em_tone2.2.mp3';
+import em_tone3 from './em_tone2.3.mp3';
+import em_tone4 from './em_tone2.4.mp3';
+import em_tone5 from './em_tone2.5.mp3';
+import em_tone6 from './em_tone2.6.mp3';
+import em_tone7 from './em_tone2.7.mp3';
+import em_tone8 from './em_tone2.8.mp3';
+import em_tone9 from './em_tone2.9.mp3';
+import em_tone10 from './em_tone2.10.mp3';
 import './App.css';
 import Login from './Login';
 import AppHome from './AppHome';
@@ -139,8 +151,11 @@ window.initialState={
   entries_loaded:false,
   topNavHidden:false,
   microphoneOn:false,
-  mainMenuVisible:false
+  mainMenuVisible:false,
+  playEmExpression:false
 };
+
+
 
 
 
@@ -170,7 +185,8 @@ class App extends Component {
       entries_loaded:false,
       topNavHidden:false,
       microphoneOn:false,
-      mainMenuVisible:false
+      mainMenuVisible:false,
+      playEmExpression:false
     };
   }
 
@@ -200,6 +216,8 @@ class App extends Component {
       threads_nav_visible:true
     });
 
+    window.emAnimationPlaying=false;
+
   }
 
   componentWillUnmount(){
@@ -210,9 +228,13 @@ class App extends Component {
   renderEmContainer(){
     var highlightColor = (this.state.active_thread!="everything"?this.state.threads[this.state.active_thread].color:"#ff9e9e");
     if(this.state.fire_logged_in){
+      var emFill = "white";
+      if(this.state.emTalking){
+        emFill = "#ffc";
+      }
       return(
         <svg id="em_container">
-           <circle id="em_body" cx={20} cy={20} r={20} fill="white" />
+           <circle id="em_body" cx={20} cy={20} r={20} fill={emFill} />
            <circle id="em_highlight" cx={30} cy={10} r={2} fill={highlightColor} />
          </svg>);
     }
@@ -222,6 +244,15 @@ class App extends Component {
     if(this.state.fire_logged_in){
       return(
         <div id="emResponses">
+        </div>);
+    }
+  }
+
+  renderEmAnimation(){
+    if(this.state.playEmExpression){
+      console.log('playing em expression');
+      return(
+        <div id="emExpression" style={{display:'none'}}><img src={em_bounce} width="240px"/>
         </div>);
     }
   }
@@ -269,7 +300,7 @@ class App extends Component {
   		window.pageHeight = $(window).height();
   		window.pageWidth = $(window).width();
       if(window.pageWidth < 901){
-        this.setEMBoundes("farLeft");
+        this.setEmBounds("farLeft");
       }
   	}.bind(this));
 
@@ -317,6 +348,64 @@ class App extends Component {
   	  window.emMovement = setInterval(function(){
 
       var em=$('#em_container');
+
+      if(this.state.playEmExpression){
+        if(this.state.emWhichExpression == "dance"){
+          if(!window.emAnimationPlaying){
+            var emSprite = $('#emExpression');
+            emSprite.css("top",(yPos+60)+"px");
+            emSprite.css("left",(xPos+103)+"px");
+            emSprite.css('display','block');
+            em.css('display','none');
+
+
+            new Audio(em_audio1).play();
+
+
+            setTimeout(function(){
+              this.setState({playEmExpression:false});
+              window.emAnimationPlaying=false;
+              em.css('display','block');
+            }.bind(this),3000);
+            window.emAnimationPlaying=true;
+          }
+        }else if(this.state.emWhichExpression == "one"){
+          new Audio(em_tone1).play();
+          this.setState({playEmExpression:false,emTalking:true});
+        }else if(this.state.emWhichExpression == "two"){
+          new Audio(em_tone2).play();
+          this.setState({playEmExpression:false,emTalking:true});
+        }else if(this.state.emWhichExpression == "three"){
+          new Audio(em_tone3).play();
+          this.setState({playEmExpression:false,emTalking:true});
+        }else if(this.state.emWhichExpression == "four"){
+          new Audio(em_tone4).play();
+          this.setState({playEmExpression:false,emTalking:true});
+        }else if(this.state.emWhichExpression == "five"){
+          new Audio(em_tone5).play();
+          this.setState({playEmExpression:false,emTalking:true});
+        }else if(this.state.emWhichExpression == "six"){
+          new Audio(em_tone6).play();
+          this.setState({playEmExpression:false,emTalking:true});
+        }else if(this.state.emWhichExpression == "seven"){
+          new Audio(em_tone7).play();
+          this.setState({playEmExpression:false,emTalking:true});
+        }else if(this.state.emWhichExpression == "eight"){
+          new Audio(em_tone8).play();
+          this.setState({playEmExpression:false,emTalking:true});
+        }else if(this.state.emWhichExpression == "nine"){
+          new Audio(em_tone9).play();
+          this.setState({playEmExpression:false,emTalking:true});
+        }else if(this.state.emWhichExpression == "ten"){
+          new Audio(em_tone10).play();
+          this.setState({playEmExpression:false,emTalking:true});
+        }
+        setTimeout(function(){
+          this.setState({emTalking:false});
+        }.bind(this),1500);
+
+      }else{
+
   		var rChange = Math.random()*.2-.1;
   		rInertia += rChange;
   		direction += rInertia;
@@ -352,9 +441,10 @@ class App extends Component {
   		}
 
       //console.log(xPos+', '+yPos);
-      em.css("transform","translate3d("+(xPos+200)+"px, "+(yPos+200)+"px, 0px)");
-      $('#emResponses').css("transform","translate3d("+(xPos+240)+"px, "+(yPos+240)+"px, 0px)");
-  	},200);
+        em.css("transform","translate3d("+(xPos+200)+"px, "+(yPos+200)+"px, 0px)");
+        $('#emResponses').css("transform","translate3d("+(xPos+240)+"px, "+(yPos+240)+"px, 0px)");
+      }
+  	}.bind(this),200);
 
 
 
@@ -713,7 +803,9 @@ userLeftPage(){
       fire_logged_in:true,
       threads:threads,
       user_everything_thread_id:user_everything_thread_id
-    });
+    },function(){
+      this.launchEMBubble();
+    }.bind(this));
   }
 
   //updating firebase user object when state{user} object is changed.
@@ -1019,6 +1111,9 @@ userLeftPage(){
           entries:entries
         });
       }else{
+        if(final_transcript.includes("dance") || Math.random() > .93){
+          this.setState({emWhichExpression:"dance", playEmExpression:true});
+        }
         //store as convo
         window.emIsWaitingForTranscript=false;
         if(overwrite){
@@ -1078,6 +1173,35 @@ userLeftPage(){
               this.checkActions(action, parameters);
             }
             var text = data.result.fulfillment.speech;
+
+            if(!window.emAnimationPlaying){
+              var whichClip = Math.random();
+              if(text.length < 15){
+                if( whichClip < .2){
+                  this.setState({emWhichExpression:"one", playEmExpression:true});
+                }else if( whichClip < .4){
+                  this.setState({emWhichExpression:"two", playEmExpression:true});
+                }else if( whichClip < .6){
+                  this.setState({emWhichExpression:"three", playEmExpression:true});
+                }else if( whichClip < .8){
+                  this.setState({emWhichExpression:"four", playEmExpression:true});
+                }else{
+                  this.setState({emWhichExpression:"five", playEmExpression:true});
+                }
+              }else{
+                if( whichClip < .2){
+                  this.setState({emWhichExpression:"ten", playEmExpression:true});
+                }else if( whichClip < .4){
+                  this.setState({emWhichExpression:"six", playEmExpression:true});
+                }else if( whichClip < .6){
+                  this.setState({emWhichExpression:"seven", playEmExpression:true});
+                }else if( whichClip < .8){
+                  this.setState({emWhichExpression:"eight", playEmExpression:true});
+                }else{
+                  this.setState({emWhichExpression:"nine", playEmExpression:true});
+                }
+              }
+            }
             this.em_speak(text);
 
             //console.log(JSON.stringify(data, undefined, 2));
@@ -1781,6 +1905,7 @@ userLeftPage(){
         {this.renderLogo()}
         <div className="AppInner" style={{background:activeThreadColor}}>
           {this.renderEmContainer()}
+          {this.renderEmAnimation()}
           {this.renderEmSpeechBubble()}
           {this.renderColorPicker()}
           {this.renderMicrophone()}
