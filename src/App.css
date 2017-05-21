@@ -63,6 +63,8 @@ body::after{
   transform:translate3d(200px, 200px, 0px);
   transition:transform .3s linear;
   fill:#fff;
+  z-index:100;
+  pointer-events:none;
 }
 
 #emResponses:empty{
@@ -73,6 +75,8 @@ body::after{
   position:absolute;
   opacity:1;
   transition:transform .3s linear, opacity .4s;
+  z-index:101;
+  pointer-events:none;
 }
 
 #emResponses .bubble{
@@ -1393,6 +1397,66 @@ body::after{
 
 
 
+
+
+#onboarding_tooltip{
+  position:absolute;
+  z-index:10000000000000000;
+  width:auto;
+  max-width:200px;
+  padding:20px;
+  background:#FFDD3F;
+  box-shadow:0px 0px 10px rgba(0,0,0,.2);
+  border-radius:5px;
+}
+
+#onboarding_tooltip[data-tooltip-position="microphone"]{
+  bottom:8px;
+  right:80px;
+  max-width:170px;
+}
+
+#onboarding_tooltip[data-tooltip-position="openConvoHistory"]{
+  bottom:8px;
+  left:80px;
+  max-width:170px;
+}
+
+#onboarding_tooltip[data-tooltip-position="closeConvoHistory"]{
+  bottom:8px;
+  left:410px;
+  max-width:170px;
+}
+
+#onboarding_tooltip[data-tooltip-position="newThread"]{
+  bottom:8px;
+  right:20px;
+  max-width:170px;
+}
+
+#onboarding_tooltip[data-tooltip-position="typeInName"]{
+  bottom:8px;
+  left:140px;
+  max-width:170px;
+}
+
+#onboarding_tooltip[data-tooltip-position="newEntry"]{
+  top:20px;
+  right:140px;
+  max-width:170px;
+}
+
+#onboarding_tooltip[data-tooltip-position="editColor"]{
+  bottom:8px;
+  left:200px;
+  max-width:170px;
+}
+
+#onboarding_tooltip[data-tooltip-position="clickColor"]{
+  bottom:160px;
+  left:200px;
+  max-width:170px;
+}
 
 
 

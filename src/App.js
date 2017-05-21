@@ -62,6 +62,12 @@ function hexToRgb(hex) {
     } : null;
 }
 
+function getFirstWord(str) {
+        if (str.indexOf(' ') === -1)
+            return str;
+        else
+            return str.substr(0, str.indexOf(' '));
+    };
 
 //capitalize each word
 function ucFirstAllWords( str )
@@ -114,6 +120,8 @@ if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
   };
 }
 
+var onboarding_tooltips = {"microphone":{"text":"Click to turn on your microphone"},"openConvoHistory":{"text":"Click to open your conversation history"},"closeConvoHistory":{"text":"Click to close your conversation history"},"newThread":{"text":"Click (+) to make a new thread"},"typeInName":{"text":"Type here to rename the thread."},"editColor":{"text":"Hover over the thread and click the ... to open the thread menu."},"clickColor":{"text":"Click *colors*"},"newEntry":{"text":"Click to make a new entry"}};
+
 firebase.initializeApp(config);
 window.firebase=firebase;
 
@@ -152,7 +160,9 @@ window.initialState={
   topNavHidden:false,
   microphoneOn:false,
   mainMenuVisible:false,
-  playEmExpression:false
+  playEmExpression:false,
+  tooltip:false,
+  onboarding_position:false
 };
 
 
@@ -186,7 +196,9 @@ class App extends Component {
       topNavHidden:false,
       microphoneOn:false,
       mainMenuVisible:false,
-      playEmExpression:false
+      playEmExpression:false,
+      tooltip:false,
+      onboarding_position:false
     };
   }
 
@@ -195,8 +207,8 @@ class App extends Component {
     this.checkForLoginCookie();
 
     //detect if browser tab is active or inactive
-    window.onfocus=this.userReturnedToPage.bind(this);
-    window.onblur=this.userLeftPage.bind(this);
+    //window.onfocus=this.userReturnedToPage.bind(this);
+    //window.onblur=this.userLeftPage.bind(this);
 
     document.addEventListener("keydown", this.pageKeyDown.bind(this));
     document.addEventListener("keyup", this.pageKeyUp.bind(this));
@@ -260,9 +272,9 @@ class App extends Component {
   setEmBounds(position){
     if(position == "left"){
       window.emBoxTop=-30;
-      window.emBoxBottom=window.pageHeight-400;
+      window.emBoxBottom=30;
       window.emBoxLeft=-30;
-      window.emBoxRight=window.pageWidth/2-200;
+      window.emBoxRight=300;
     }else if(position == "center"){
       window.emBoxTop=-30;
       window.emBoxBottom=window.pageHeight-400;
@@ -524,7 +536,10 @@ userLeftPage(){
         console.log('Signout successful!');
         cookie.remove('fid');
         console.log(window.initialState);
-        this.setState(window.initialState,this.componentDidMount);
+        this.setState(window.initialState,function(){
+          this.componentWillMount();
+          this.componentDidMount();
+        }.bind(this));
      }.bind(this), function(error) {
         console.log('Signout failed')
      });
@@ -602,9 +617,126 @@ userLeftPage(){
             this.getFirebaseThreadData(fid);
           }
           this.launchEMBubble();
+          if(user.name.split(" ")[0]=='Bailey' || user.name.split(" ")[0]=='bailey'){
+            this.startIntroDialog();
+          }
         });
       }
     });
+  }
+
+  startIntroDialog(){
+    console.log('starting intro dialog');
+    this.setState({onboarding_position:1}, function(){
+      this.nextIntroDialog();
+    }.bind(this));
+  }
+
+  nextIntroDialog(data){
+    console.log('next intro dialog');
+    if(this.state.onboarding_position==1){
+      var name = getFirstWord(this.state.user.name);
+      this.em_speak("Hi "+name+"! I’m Em, its great to meet you. :)",2500);
+      this.em_speak("Go ahead and click the circle icon in the bottom right corner so you can talk to me using your voice.",5000);
+      setTimeout(function(){
+        this.show_tooltip('microphone');
+      }.bind(this),7000);
+    }else if(this.state.onboarding_position==2){
+      this.hide_tooltip();
+      //this.em_speak("You may have to click *Allow Microphone Access*");
+      this.em_speak("Go ahead and start speaking and I'll let you know if I can hear you.",2500);
+      this.em_speak("You can see a transcript of what I'm hearing next to the microphone button.",6000);
+    }else if(this.state.onboarding_position==3){
+      this.hide_tooltip();
+      this.em_speak("Nice, so I can hear you now!");
+      this.em_speak("You'll be able to see a log of what we've said in the convo history.",2500);
+      this.em_speak("Go ahead and check it out.",4000);
+      setTimeout(function(){
+        this.show_tooltip('openConvoHistory');
+      }.bind(this),3500);
+    }else if(this.state.onboarding_position==4){
+      this.hide_tooltip();
+      this.em_speak("You can always come back here and scroll to see what we've talked about.");
+      this.em_speak("Click the convo history button again to close it.",3500);
+      setTimeout(function(){
+        this.show_tooltip('closeConvoHistory');
+      }.bind(this),3500);
+    }else if(this.state.onboarding_position==5){
+      this.hide_tooltip();
+      this.em_speak("Okay great. Now I want to get to know you a little bit.");
+      this.em_speak("Let's see...",3500);
+      this.em_speak("Can you tell me about someone in your life that you are close with?",5000);
+    }else if(this.state.onboarding_position==6){
+      this.em_speak("Okay, this sounds like someone important. You should make a new thread for them!");
+      setTimeout(function(){
+        this.show_tooltip('newThread');
+      }.bind(this),3500);
+    }else if(this.state.onboarding_position==7){
+      this.hide_tooltip();
+      this.em_speak("Nice! You should see a new thread down at the bottom left called 'New Thread.'");
+      this.em_speak("Go ahead and type in the name of the person you were telling me about.",4000);
+      setTimeout(function(){
+        this.show_tooltip('typeInName');
+      }.bind(this),4000);
+    }else if(this.state.onboarding_position==8){
+      this.hide_tooltip();
+      this.em_speak("Awesome, so now you've got a thread for "+data);
+      this.em_speak("Anytime you mention them I'll make sure to include it here in this thread. That way you can keep track of your relationship.",4000);
+      this.em_speak("Hmm.. that gray doesn't quite feel like "+data+" does it?",11000);
+      this.em_speak("Let's pick a new color for "+data+"'s thread!",15000);
+      setTimeout(function(){
+        this.show_tooltip('editColor');
+      }.bind(this),12000);
+    }else if(this.state.onboarding_position==9){
+      this.show_tooltip('clickColor');
+      this.em_speak("Click *color* to edit the color for this thread.");
+    }else if(this.state.onboarding_position==10){
+      this.hide_tooltip();
+      this.em_speak("So which color feels right for them? Pick one and click on it!",2000);
+      setTimeout(function(){
+        if(this.state.onboarding_position==10){
+          this.em_speak("What comes to mind when you think of them? Maybe the color of a favorite food, or a place you two spend time together?");
+        }
+      }.bind(this),7500);
+    }else if(this.state.onboarding_position==11){
+      this.hide_tooltip();
+      this.em_speak("Ooo I love this color!",2000);
+      setTimeout(function(){
+        this.setState({emWhichExpression:"dance", playEmExpression:true});
+      }.bind(this),2000);
+      this.em_speak("Okay, the last thing I wanted to show you is how to make a new journal entry!",9000);
+      this.em_speak("Click the [+] button in the top right to make a new entry.",12000);
+      setTimeout(function(){
+        this.show_tooltip('newEntry');
+      }.bind(this),12000);
+    }else if(this.state.onboarding_position==12){
+      this.hide_tooltip();
+      var name = this.state.threads[this.state.active_thread].name;
+      this.em_speak("So this is a new entry for "+name+".",3000);
+      this.em_speak("Why don't you talk a little bit about a favorite memory that you have with "+name+".",5000);
+      this.em_speak("If you don't feel like talking out loud you can always click in the entry and type.",12000);
+      this.em_speak("Go ahead and talk as long as you'd like. When you're finished click [done] and I'll save this in "+name+"'s thread.",19000);
+      this.em_speak("Finally, if you need to ask me anything while you're journaling, just hold down the [Command] key and talk to me and I'll respond.",27000);
+    }
+  }
+
+  show_tooltip(tooltip){
+      this.setState({tooltip:tooltip});
+  }
+
+  hide_tooltip(){
+    this.setState({tooltip:false});
+  }
+
+  renderTooltip(){
+    if(this.state.tooltip!=false){
+      var tooltip = this.state.tooltip;
+      return (
+        <div key="tooltip" id="onboarding_tooltip" data-tooltip-position={tooltip}>
+          {onboarding_tooltips[tooltip].text}
+        </div>
+      );
+    }
   }
 
   getFirebaseThreadData(fid){
@@ -805,6 +937,7 @@ userLeftPage(){
       user_everything_thread_id:user_everything_thread_id
     },function(){
       this.launchEMBubble();
+      this.startIntroDialog();
     }.bind(this));
   }
 
@@ -867,6 +1000,11 @@ userLeftPage(){
     },function(){
       this.beginRenameThread(newThreadId);
       this.setEmBounds("left");
+      if(this.state.onboarding_position==6){
+        this.setState({onboarding_position:7},function(){
+          this.nextIntroDialog();
+        }.bind(this));
+      }
     }.bind(this));
   }
 
@@ -1125,7 +1263,24 @@ userLeftPage(){
         this.setState({
           convoHistory:convoHistory
         });
-        this.send_Api_Ai(final_transcript);
+        //send the text to API.ai for conversion
+        if(this.state.onboarding_position!=5 && this.state.onboarding_position!=6){
+          this.send_Api_Ai(final_transcript);
+        }
+
+        if(this.state.onboarding_position==2){
+          setTimeout(function(){
+            this.setState({onboarding_position:3},function(){
+              this.nextIntroDialog();
+            });
+          }.bind(this),2000);
+        }else if(this.state.onboarding_position==5){
+          setTimeout(function(){
+            this.setState({onboarding_position:6},function(){
+              this.nextIntroDialog();
+            });
+          }.bind(this),2000);
+        }
       }
   }
 
@@ -1283,6 +1438,17 @@ userLeftPage(){
 
         }*/
         $("body").scrollTop(1000);
+        if(this.state.onboarding_position==3){
+          this.setState({onboarding_position:4},function(){
+            this.nextIntroDialog();
+          }.bind(this));
+        }
+      }else{
+        if(this.state.onboarding_position==4){
+          this.setState({onboarding_position:5},function(){
+            this.nextIntroDialog();
+          }.bind(this));
+        }
       }
     });
   }
@@ -1343,6 +1509,11 @@ userLeftPage(){
   toggleMic(mic_setting){
     console.log(mic_setting);
     this.setState({microphoneOn:mic_setting});
+    if(this.state.onboarding_position==1){
+      this.setState({onboarding_position:2},function(){
+        this.nextIntroDialog();
+      }.bind(this));
+    }
   }
 
   updateConvoInputHeight(height){
@@ -1468,6 +1639,11 @@ userLeftPage(){
       thread_menu_open:!this.state.thread_menu_open,
       thread_menu_left:left
     });
+    if(this.state.onboarding_position==8){
+      this.setState({onboarding_position:9},function(){
+        this.nextIntroDialog();
+      }.bind(this));
+    }
   }
 
   scrollThreads(){
@@ -1477,8 +1653,11 @@ userLeftPage(){
   }
 
   clickNewThreadButton(){
-    this.em_speak("I'm happy to create a new thread for you as well!",500);
-    this.em_speak("You can say: Create a new thread named ______.",1500);
+    /*
+    if(this.state.onboarding_position!=6 && this.state.onboarding_position!=7 && this.state.onboarding_position!=8){
+      this.em_speak("I'm happy to create a new thread for you as well!",500);
+      this.em_speak("You can say: Create a new thread named ______.",1500);
+    }*/
     this.createNewFirebaseThread();
   }
 
@@ -1619,6 +1798,23 @@ userLeftPage(){
   blurRenameThread(e){
     var name=e.currentTarget.textContent;
     var thread_id=this.state.renaming_thread_id;
+
+    if(this.state.onboarding_position==7){
+      if(name == '' || name == 'New Thread'){
+        if(name == ''){
+          this.em_speak("Oops! It looks like you left the thread name blank. Let's try that again. Type their name into the thread.");
+        }else{
+          this.em_speak("Oops! It looks like you named the thread 'New Thread'. Let's try that again. Type their name into the thread.");
+        }
+        $('.threadTitle[data-thread-id="'+thread_id+'"]').focus();
+        document.execCommand('selectAll', false, null);
+        return false;
+      }
+      this.setState({onboarding_position:8},function(){
+        this.nextIntroDialog(name);
+      }.bind(this));
+    }
+
     if(name != ""){
       name=ucFirstAllWords(name);
       this.renameFirebaseThread(thread_id, name);
@@ -1633,6 +1829,11 @@ userLeftPage(){
 
   beginRecolorThread(){
     this.setState({recoloring_type:"thread",recoloring_thread_id:this.state.active_thread,thread_menu_open:false});
+    if(this.state.onboarding_position==9){
+      this.setState({onboarding_position:10},function(){
+        this.nextIntroDialog();
+      }.bind(this));
+    }
   }
 
   closeColorPicker(){
@@ -1671,6 +1872,11 @@ userLeftPage(){
       this.recolorFirebaseThread(type,id,color,textColor,uiColor,brightness);
     }else if(type == "entry"){
 
+    }
+    if(this.state.onboarding_position==10){
+      this.setState({onboarding_position:11},function(){
+        this.nextIntroDialog();
+      }.bind(this));
     }
   }
 
@@ -1766,6 +1972,11 @@ userLeftPage(){
       thread_id=this.state.user_everything_thread_id;
     }
     this.createNewFirebaseEntry(type,thread_id);
+    if(this.state.onboarding_position==11){
+      this.setState({onboarding_position:12},function(){
+        this.nextIntroDialog();
+      }.bind(this));
+    }
   }
 
   finishEntry(entry_id){
@@ -1915,6 +2126,7 @@ userLeftPage(){
           {this.firebaseUserUpdateObject()}
           {this.renderThreadsNav()}
           {this.renderThreadPage(new_color)}
+          {this.renderTooltip()}
         </div>
       </div>
     );
