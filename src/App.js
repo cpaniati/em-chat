@@ -134,9 +134,9 @@ provider.addScope('user_birthday');
 provider.addScope('user_friends');
 provider.addScope('email');
 
-provider.setCustomParameters({
+/*provider.setCustomParameters({
   'display': 'popup'
-});
+});*/
 
 window.initialState={
   login_visible:false,
@@ -230,6 +230,40 @@ class App extends Component {
 
     window.emAnimationPlaying=false;
 
+    if(cookie.load('em_signing_in') == 'true'){
+
+      cookie.save('em_signing_in', 'false');
+      cookie.remove('em_signing_in');
+
+      firebase.auth().getRedirectResult().then(function(result) {
+        // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+        var token=result.credential.accessToken;
+        // The signed-in user info.
+        var user=result.user;
+
+        console.log(user);
+        console.log(token);
+
+        this.setState({fb_user:user,fb_token:token,face_logged_in:true}, this.firebaseLogin.bind(this));
+      }.bind(this), function(error) {
+        alert(error);
+        // The provider's account email, can be used in case of
+        // auth/account-exists-with-different-credential to fetch the providers
+        // linked to the email:
+        var email = error.email;
+        // The provider's credential:
+        var credential = error.credential;
+        // In case of auth/account-exists-with-different-credential error,
+        // you can fetch the providers using this:
+        if (error.code === 'auth/account-exists-with-different-credential') {
+          firebase.auth().fetchProvidersForEmail(email).then(function(providers) {
+            // The returned 'providers' is a list of the available providers
+            // linked to the email address. Please refer to the guide for a more
+            // complete explanation on how to recover from this error.
+          });
+        }
+      });
+    }
   }
 
   componentWillUnmount(){
@@ -503,6 +537,7 @@ userLeftPage(){
 /***************** FACEBOOK FUNCTIONALITY ******************/
 
   facebookSignin() {
+    /*
     firebase.auth().signInWithPopup(provider).then(function(result) {
       // This gives you a Facebook Access Token. You can use it to access the Facebook API.
       var token=result.credential.accessToken;
@@ -527,6 +562,15 @@ userLeftPage(){
       // ...
       alert(errorMessage);
     });
+    */
+    cookie.save('em_signing_in', 'true');
+    firebase.auth().signInWithRedirect(provider);
+    ////////////////////////////////////////////////////////////
+    // The user is redirected to the provider's sign in flow...
+    ////////////////////////////////////////////////////////////
+    // Then redirected back to the app, where we check the redirect result:
+
+
   }
 
   facebookSignout() {
